@@ -8,14 +8,21 @@ const initialTheme = isBrowser
   ? (localStorage.getItem('theme') as 'light' | 'dark') || 'dark'
   : 'dark';
 
+// Set initial class immediately on page load
+if (isBrowser) {
+  document.documentElement.classList.remove('light', 'dark');
+  document.documentElement.classList.add(initialTheme);
+}
+
 export const theme = writable<'light' | 'dark'>(initialTheme);
 
 // Subscribe to changes and update localStorage + HTML class
 if (isBrowser) {
   theme.subscribe(value => {
     localStorage.setItem('theme', value);
-    document.documentElement.classList.toggle('dark', value === 'dark');
-    document.documentElement.classList.toggle('light', value === 'light');
+    // Remove both classes first, then add the active one
+    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.add(value);
   });
 }
 

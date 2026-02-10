@@ -28,7 +28,7 @@
       'max-w-[85%] sm:max-w-[70%] rounded-2xl px-4 py-3 shadow-sm',
       isUser
         ? 'bg-blue-600 text-white rounded-br-md'
-        : 'bg-slate-800 text-slate-100 rounded-bl-md'
+        : 'bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-bl-md border border-gray-200 dark:border-transparent'
     )}
   >
     {#if message.isTyping}
@@ -43,7 +43,7 @@
       </p>
       <span class={cn(
         'text-xs mt-1 block',
-        isUser ? 'text-blue-100' : 'text-slate-400'
+        isUser ? 'text-blue-100' : 'text-slate-500 dark:text-slate-400'
       )}>
         {formattedTime}
       </span>

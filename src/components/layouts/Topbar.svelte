@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { Sun, Moon, User } from '@lucide/svelte';
+  import { Sun, Moon, User, Sparkles } from '@lucide/svelte';
   import { theme, toggleTheme } from '@stores/theme';
-  import BotIcon from '@components/ui/icons/Bot.svelte';
 
   interface Props {
     title?: string;
@@ -16,12 +15,12 @@
   });
 </script>
 
-<header class="sticky top-0 z-50 bg-slate-800/95 dark:bg-slate-800/95 backdrop-blur-sm border-b border-slate-700 px-6 py-3">
+<header class="sticky top-0 z-50 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 px-6 py-3">
   <div class="flex items-center justify-between max-w-7xl mx-auto">
     <!-- Logo & Title -->
     <div class="flex items-center gap-3">
-      <BotIcon size={28} class="text-blue-500" />
-      <h1 class="text-xl font-bold text-slate-100">{title}</h1>
+      <Sparkles size={28} class="text-purple-500" />
+      <h1 class="text-xl font-bold text-slate-900 dark:text-slate-100">{title}</h1>
     </div>
 
     <!-- Right Controls -->
@@ -29,7 +28,7 @@
       <!-- Theme Toggle -->
       <button
         onclick={toggleTheme}
-        class="p-2.5 rounded-lg bg-slate-700/50 hover:bg-slate-700 text-slate-300 hover:text-slate-100 transition-all"
+        class="p-2.5 rounded-lg bg-gray-200 dark:bg-slate-700/50 hover:bg-gray-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-all"
         aria-label="Toggle theme"
         title={currentTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
       >
