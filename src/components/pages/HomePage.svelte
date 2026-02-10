@@ -40,7 +40,7 @@
   ];
 </script>
 
-<div class="h-full overflow-y-auto bg-gradient-to-b from-gray-50 via-gray-100 to-gray-200 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
+<div class="h-full overflow-y-auto bg-gradient-to-b from-gray-50 via-gray-100 to-gray-200 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 pb-16">
   
   <!-- Hero Section: Reduced height (70vh) -->
   <section class="relative min-h-[85vh] sm:min-h-[70vh] md:min-h-[75vh] flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">

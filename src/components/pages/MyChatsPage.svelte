@@ -12,7 +12,7 @@
   }));
 </script>
 
-<div class="h-full overflow-y-auto bg-gradient-to-b from-gray-50 to-white dark:from-slate-950 dark:to-slate-900 px-4 sm:px-6 py-8">
+<div class="h-full overflow-y-auto bg-gradient-to-b from-gray-50 to-white dark:from-slate-950 dark:to-slate-900 px-4 sm:px-6 py-8 pb-16">
   <div class="max-w-4xl mx-auto">
     <!-- Header -->
     <div class="mb-8">

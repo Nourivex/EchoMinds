@@ -119,7 +119,7 @@
     </div>
 
     <!-- Footer -->
-    <div class="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">
+    <div class="mt-8 mb-8 text-center text-sm text-slate-500 dark:text-slate-400">
       <p>© 2026 EchoMinds. Made with 💜 for meaningful connections.</p>
     </div>
   </div>
