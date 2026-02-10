@@ -89,9 +89,11 @@
   </nav>
 </aside>
 
-<!-- Spacer untuk konten utama -->
+<!-- Content Area dengan proper spacing - LAYOUT responsibility -->
 <div class="w-full h-full {isExpanded ? 'pl-56' : 'pl-16'} transition-all duration-300">
-  {#if children}
-    {@render children()}
-  {/if}
+  <div class="h-full flex flex-col">
+    {#if children}
+      {@render children()}
+    {/if}
+  </div>
 </div>

@@ -64,19 +64,24 @@
   {:else}
     <!-- All other routes dengan Sidebar -->
     <Sidebar>
-      <Topbar />
-      
-      {#if routerState.currentRoute === 'home'}
-        <HomePage onCharacterSelect={handleCharacterSelect} />
-      {:else if routerState.currentRoute === 'my-chats'}
-        <MyChatsPage />
-      {:else if routerState.currentRoute === 'explore'}
-        <ExplorePage />
-      {:else if routerState.currentRoute === 'create'}
-        <CreatePage />
-      {:else if routerState.currentRoute === 'settings'}
-        <SettingsPage />
-      {/if}
+      <div class="h-full flex flex-col">
+        <Topbar />
+        
+        <!-- Content Area dengan proper spacing -->
+        <div class="flex-1 overflow-hidden pb-safe">
+          {#if routerState.currentRoute === 'home'}
+            <HomePage onCharacterSelect={handleCharacterSelect} />
+          {:else if routerState.currentRoute === 'my-chats'}
+            <MyChatsPage />
+          {:else if routerState.currentRoute === 'explore'}
+            <ExplorePage />
+          {:else if routerState.currentRoute === 'create'}
+            <CreatePage />
+          {:else if routerState.currentRoute === 'settings'}
+            <SettingsPage />
+          {/if}
+        </div>
+      </div>
     </Sidebar>
   {/if}
 </div>
