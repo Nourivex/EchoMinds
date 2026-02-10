@@ -1,0 +1,30 @@
+# Core API Framework
+fastapi==0.115.0
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+pydantic==2.10.4
+pydantic-settings==2.7.0
+
+# LLM Integration
+ollama==0.4.5
+openai==1.59.5  # For OpenAI-compatible APIs
+
+# Vector Database & Embeddings
+chromadb==0.5.23
+sentence-transformers==3.3.1
+
+# Data Processing & Storage
+python-dotenv==1.0.1
+aiofiles==24.1.0
+orjson==3.10.12
+
+# Monitoring & Logging
+psutil==6.1.1
+python-json-logger==3.2.1
+
+# CORS & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Optional: Llama.cpp fallback
+# llama-cpp-python==0.3.2  # Uncomment if using llama.cpp

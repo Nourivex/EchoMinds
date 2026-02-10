@@ -1,47 +1,247 @@
-# Svelte + TS + Vite
+# EchoMinds - Your Personal AI Companion 💜
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+<div align="center">
 
-## Recommended IDE Setup
+**Mobile-first AI companion platform dengan local LLM dan RAG memory**
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
+[![Svelte 5](https://img.shields.io/badge/Svelte-5.45-orange)](https://svelte.dev/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-green)](https://fastapi.tiangolo.com/)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11+-blue)](https://www.python.org/)
 
-## Need an official Svelte framework?
+[Features](#-features) • [Installation](#-quick-start) • [Documentation](docs/) • [Contributing](CONTRIBUTING.md)
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+</div>
 
-## Technical considerations
+---
 
-**Why use this over SvelteKit?**
+## 🌟 Features
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+### ✨ **Emotion-First Design**
+- 🎨 **Candy.AI-inspired UI** - Beautiful, connection-focused interface
+- 🌓 **Dark/Light Mode** - Seamless theme switching dengan localStorage persistence
+- 📱 **Mobile-First** - Responsive design dengan auto-collapsing sidebar
+- ✨ **Smooth Animations** - Polished micro-interactions
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+### 💬 **Advanced Chat System**
+- 🤖 **Local LLM** - Ollama/Llama.cpp integration untuk privacy
+- 🧠 **RAG Memory** - Per-character vector database dengan ChromaDB
+- 👥 **Multiple Characters** - Setiap karakter punya personality & memory unik
+- 💾 **Persistent Conversations** - Chat history tersimpan per user-character pair
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+### ⚙️ **Customizable Performance**
+- 🔧 **CPU/GPU Control** - Atur resource allocation (CPU threads, GPU layers)
+- 🎛️ **Model Switching** - Ganti model LLM secara dynamic
+- 📊 **Resource Monitoring** - Real-time CPU/memory usage tracking
+- 🚀 **Optimized Inference** - Context caching & efficient batching
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
+### 🎭 **Character System**
+- ✍️ **Custom Characters** - Create your own AI companions
+- 📝 **Rich Personalities** - System prompts, example dialogues, emotional hooks
+- 🔍 **Explore & Discover** - Browse curated character collection
+- 💾 **Character Memory** - Each character remembers your conversations uniquely
 
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
+---
 
-**Why include `.vscode/extensions.json`?**
+## 🚀 Quick Start
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+### Prerequisites
 
-**Why enable `allowJs` in the TS template?**
+- **Node.js** 20+ & npm
+- **Python** 3.11+
+- **Ollama** (atau Llama.cpp)
 
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
+### Installation
 
-**Why is HMR not preserving my local component state?**
+```bash
+# Clone repository
+git clone https://github.com/Nourivex/EchoMinds.git
+cd EchoMinds
 
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
+# Install frontend dependencies
+npm install
 
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
+# Install backend dependencies
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+cd ..
 
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+# Setup configuration
+cp backend/.env.example backend/.env
+# Edit backend/.env sesuai kebutuhan
+
+# Install & start Ollama (if using Ollama)
+# Download from: https://ollama.ai
+ollama pull llama3.2:3b
 ```
+
+### Running Development
+
+```bash
+# Terminal 1: Frontend (Vite dev server)
+npm run dev
+# Access: http://localhost:5173
+
+# Terminal 2: Backend (FastAPI server)
+cd backend
+uvicorn main:app --reload --port 8000
+# API: http://localhost:8000
+
+# Terminal 3: Ollama (if not running as service)
+ollama serve
+```
+
+---
+
+## 📚 Documentation
+
+### Setup & Configuration
+- [📦 Installation Guide](docs/setup/installation.md)
+- [⚙️ Configuration Options](docs/setup/configuration.md)
+
+### Architecture
+- [🏗️ System Overview](docs/architecture/overview.md)
+- [🎨 Frontend Architecture](docs/architecture/frontend.md)
+- [⚡ Backend Architecture](docs/architecture/backend.md)
+
+### API Reference
+- [📡 REST API Endpoints](docs/api/endpoints.md)
+- [📋 Request/Response Models](docs/api/models.md)
+
+### Features
+- [💬 Chat System](docs/features/chat.md)
+- [🧠 RAG & Memory](docs/features/rag.md)
+- [🎭 Character Creation](docs/features/characters.md)
+- [🎨 Theme System](docs/features/theming.md)
+
+### Development
+- [🛠️ Development Guide](docs/guides/development.md)
+- [🚀 Deployment Guide](docs/guides/deployment.md)
+- [🧪 Testing Guide](docs/guides/testing.md)
+- [🤝 Contributing](CONTRIBUTING.md)
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **Framework:** Svelte 5 (Runes mode)
+- **Build Tool:** Vite 7.3
+- **Language:** TypeScript 5.9 (strict mode)
+- **Styling:** Tailwind CSS 3.4
+- **Icons:** @lucide/svelte
+- **State Management:** Svelte Stores
+
+### Backend
+- **Framework:** FastAPI 0.115
+- **LLM Runtime:** Ollama / Llama.cpp
+- **Vector DB:** ChromaDB 0.5
+- **Embeddings:** sentence-transformers
+- **Validation:** Pydantic 2.10
+- **Server:** Uvicorn
+
+### Infrastructure
+- **Local LLM:** Ollama (recommended) atau Llama.cpp
+- **Storage:** File-based (conversations, characters)
+- **Vector Store:** ChromaDB (persistent)
+
+---
+
+## 📁 Project Structure
+
+```
+EchoMinds/
+├── src/                      # Frontend source
+│   ├── components/          
+│   │   ├── chat/            # Chat interface components
+│   │   ├── layouts/         # Sidebar, Topbar
+│   │   ├── pages/           # Route pages
+│   │   └── ui/              # Reusable UI components
+│   ├── lib/                 
+│   │   ├── data/            # Mock data & constants
+│   │   └── utils/           # Utility functions
+│   ├── models/              # TypeScript interfaces
+│   ├── services/            # API service layer
+│   ├── stores/              # Svelte stores (router, theme)
+│   └── App.svelte           # Root component
+│
+├── backend/                 # Backend source
+│   ├── api/                 # FastAPI routes
+│   ├── llm/                 # LLM services (Ollama, Llama.cpp)
+│   ├── rag/                 # RAG & vector DB
+│   ├── models/              # Pydantic models
+│   ├── services/            # Business logic
+│   ├── config/              # Configuration
+│   └── main.py              # FastAPI app entry
+│
+├── data/                    # Runtime data (gitignored)
+│   ├── characters/          # Character profiles
+│   ├── conversations/       # Chat history
+│   └── vectorstore/         # ChromaDB embeddings
+│
+├── docs/                    # Documentation
+│   ├── setup/
+│   ├── architecture/
+│   ├── api/
+│   ├── features/
+│   └── guides/
+│
+└── tests/                   # Test suites
+    ├── frontend/
+    └── backend/
+```
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) untuk guidelines.
+
+### Development Workflow
+1. Fork repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+### Code Style
+- **Frontend:** ESLint + Prettier
+- **Backend:** Black + isort + mypy
+- **Commits:** Conventional Commits format
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Svelte Team** - Amazing framework
+- **Ollama** - Easy local LLM deployment
+- **ChromaDB** - Powerful vector database
+- **Tailwind CSS** - Utility-first styling
+- **Candy.AI** - UI/UX inspiration
+
+---
+
+## 📞 Contact & Support
+
+- **Issues:** [GitHub Issues](https://github.com/Nourivex/EchoMinds/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/Nourivex/EchoMinds/discussions)
+- **Email:** support@echominds.dev
+
+---
+
+<div align="center">
+
+**Made with 💜 by Lycus**
+
+[⬆ Back to Top](#echominds---your-personal-ai-companion-)
+
+</div>
