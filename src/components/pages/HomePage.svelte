@@ -1,5 +1,6 @@
 <script lang="ts">
   import { mockCharacters } from '@lib/data/mockData';
+  import { ChevronDown } from '@lucide/svelte';
   import BotIcon from '@components/ui/icons/Bot.svelte';
 
   interface Props {
@@ -42,15 +43,15 @@
 
 <div class="h-full overflow-y-auto bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800">
   
-  <!-- Hero Section: Above The Fold -->
-  <section class="relative min-h-[85vh] flex items-center justify-center px-6 py-12">
+  <!-- Hero Section: Reduced height (70vh) -->
+  <section class="relative min-h-[70vh] sm:min-h-[75vh] flex flex-col items-center justify-center px-6 py-12">
     <!-- Background gradient overlay -->
     <div class="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-blue-900/10 to-slate-900/40"></div>
     
-    <div class="relative max-w-4xl mx-auto text-center">
+    <div class="relative max-w-4xl mx-auto text-center flex-1 flex flex-col justify-center">
       <!-- Featured Character Avatar (Large & Prominent) -->
       <div class="mb-8 inline-block">
-        <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-blue-500 p-1 shadow-2xl shadow-purple-500/30 animate-pulse-slow">
+        <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-blue-500 p-1 shadow-2xl shadow-purple-500/30 animate-pulse-slow mx-auto">
           <div class="w-full h-full rounded-full bg-slate-800 flex items-center justify-center text-6xl sm:text-7xl">
             {featuredCharacter.avatar}
           </div>
@@ -71,20 +72,28 @@
       </p>
 
       <!-- Single Primary CTA -->
-      <button 
-        onclick={() => onCharacterSelect(featuredCharacter.id)}
-        class="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white text-lg font-semibold rounded-full shadow-2xl shadow-purple-500/40 transition-all duration-300 hover:scale-105 hover:shadow-purple-500/60"
-      >
-        <BotIcon size={24} class="group-hover:rotate-12 transition-transform" />
-        <span>Start Your Connection</span>
-      </button>
-
-      <!-- Subtle secondary option -->
-      <div class="mt-6">
-        <button class="text-slate-500 hover:text-slate-300 text-sm transition-colors underline-offset-4 hover:underline">
-          or explore other companions
+      <div>
+        <button 
+          onclick={() => onCharacterSelect(featuredCharacter.id)}
+          class="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white text-lg font-semibold rounded-full shadow-2xl shadow-purple-500/40 transition-all duration-300 hover:scale-105 hover:shadow-purple-500/60"
+        >
+          <BotIcon size={24} class="group-hover:rotate-12 transition-transform" />
+          <span>Start Your Connection</span>
         </button>
+
+        <!-- Subtle secondary option -->
+        <div class="mt-6">
+          <button class="text-slate-500 hover:text-slate-300 text-sm transition-colors underline-offset-4 hover:underline">
+            or explore other companions
+          </button>
+        </div>
       </div>
+    </div>
+
+    <!-- Scroll Hint -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce-slow">
+      <span class="text-slate-500 text-xs uppercase tracking-wider">Scroll</span>
+      <ChevronDown size={20} class="text-slate-500" />
     </div>
   </section>
 
@@ -209,5 +218,18 @@
   
   .animate-pulse-slow {
     animation: pulse-slow 3s ease-in-out infinite;
+  }
+
+  @keyframes bounce-slow {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  .animate-bounce-slow {
+    animation: bounce-slow 2s ease-in-out infinite;
   }
 </style>
