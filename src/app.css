@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: #0f172a; /* slate-900 */
+    color: #f1f5f9; /* slate-100 */
+    /* Prevent layout shift on mobile when keyboard appears */
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  #app {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+@layer components {
+  /* Mobile-first responsive utilities */
+  .safe-area-inset {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
