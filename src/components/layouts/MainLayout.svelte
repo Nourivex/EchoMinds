@@ -1,5 +1,5 @@
 <script lang="ts">
-  import BotIcon from '@components/ui/icons/Bot.svelte';
+  import { Camera as BotIcon } from '@lucide/svelte';
   import MenuIcon from '@components/ui/icons/Menu.svelte';
   import ChevronLeftIcon from '@components/ui/icons/ChevronLeft.svelte';
 
