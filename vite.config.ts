@@ -13,7 +13,7 @@ export default defineConfig({
       '@stores': fileURLToPath(new URL('./src/stores', import.meta.url)),
       '@features': fileURLToPath(new URL('./src/features', import.meta.url)),
       '@services': fileURLToPath(new URL('./src/services', import.meta.url)),
-      '@types': fileURLToPath(new URL('./src/types', import.meta.url)),
+      '@models': fileURLToPath(new URL('./src/models', import.meta.url)),
     }
   },
   server: {

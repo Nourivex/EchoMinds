@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Message } from '@types/chat';
+  import type { Message } from '@models/chat';
   import { cn } from '@lib/utils/cn';
 
   interface Props {

@@ -1,18 +1,17 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { Message } from '@types/chat';
+  import type { Message, Character } from '@models/chat';
   import ChatMessage from '@components/ui/ChatMessage.svelte';
   import InputBar from './InputBar.svelte';
 
+  interface Props {
+    character?: Character | null;
+  }
+
+  let { character }: Props = $props();
+
   // Mock state menggunakan Svelte 5 Runes
-  let messages = $state<Message[]>([
-    {
-      id: '1',
-      content: 'Halo! Aku EchoMinds, teman AI-mu. Ada yang bisa kubantu?',
-      role: 'assistant',
-      timestamp: new Date()
-    }
-  ]);
+  let messages = $state<Message[]>([]);
 
   let isAssistantTyping = $state(false);
   let chatContainerRef = $state<HTMLDivElement | null>(null);
@@ -46,9 +45,10 @@
     // Mock AI response delay
     await new Promise(resolve => setTimeout(resolve, 1500));
 
+    const characterName = character?.name || 'EchoMinds';
     const assistantMessage: Message = {
       id: (Date.now() + 1).toString(),
-      content: `Kamu bilang: "${content}". Ini adalah response mock dari EchoMinds AI.`,
+      content: `Kamu bilang: "${content}". Ini adalah response mock dari ${characterName}.`,
       role: 'assistant',
       timestamp: new Date()
     };
@@ -67,6 +67,22 @@
   $effect(() => {
     if (messages.length > 0) {
       setTimeout(() => scrollToBottom(), 100);
+    }
+  });
+
+  // Reset messages when character changes
+  $effect(() => {
+    if (character) {
+      const initialGreeting = character.greeting || 'Halo! Ada yang bisa kubantu?';
+      messages = [
+        {
+          id: '1',
+          content: initialGreeting,
+          role: 'assistant',
+          timestamp: new Date()
+        }
+      ];
+      setTimeout(() => scrollToBottom(false), 100);
     }
   });
 </script>

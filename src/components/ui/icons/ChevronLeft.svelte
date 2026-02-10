@@ -24,6 +24,5 @@
   stroke-linejoin="round"
   class={className}
 >
-  <path d="m22 2-7 20-4-9-9-4Z"></path>
-  <path d="M22 2 11 13"></path>
+  <path d="m15 18-6-6 6-6"></path>
 </svg>
