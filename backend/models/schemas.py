@@ -33,11 +33,27 @@ class ChatMessage(BaseModel):
 class ModelConfigUpdate(BaseModel):
     """Model configuration update request"""
     model_name: Optional[str] = Field(None, description="Model name (e.g., llama3.2:3b)")
-    cpu_threads: Optional[int] = Field(None, ge=1, le=32, description="Number of CPU threads"    )
+    cpu_threads: Optional[int] = Field(None, ge=1, le=32, description="Number of CPU threads")
     gpu_layers: Optional[int] = Field(None, ge=-1, le=100, description="GPU layers (-1 = all)")
     temperature: Optional[float] = Field(None, ge=0.0, le=2.0, description="Sampling temperature")
     context_length: Optional[int] = Field(None, ge=512, le=32768, description="Context window size")
     max_tokens: Optional[int] = Field(None, ge=50, le=4096, description="Max generation tokens")
+
+
+class CharacterCreateRequest(BaseModel):
+    """Character creation request"""
+    name: str = Field(..., min_length=1, max_length=50, description="Character name")
+    avatar: str = Field(..., min_length=1, max_length=10, description="Character avatar emoji")
+    description: str = Field(..., min_length=10, max_length=200, description="Short description")
+    personality: str = Field(..., min_length=10, max_length=1000, description="Personality traits")
+    background: Optional[str] = Field(None, max_length=2000, description="Character background/lore")
+    language: str = Field(default="id", description="Primary language (id/en)")
+    conversationStyle: str = Field(default="friendly", description="Conversation style")
+    relationshipType: str = Field(default="friend", description="Relationship type with user")
+    emotionalTone: str = Field(default="warm", description="Emotional tone")
+    category: str = Field(default="supportive", description="Character category")
+    greeting: Optional[str] = Field(None, description="Custom greeting message")
+    systemPromptOverride: Optional[str] = Field(None, description="Custom system prompt (advanced)")
 
 
 # ============ API Response Models ============

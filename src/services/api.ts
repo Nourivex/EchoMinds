@@ -207,6 +207,32 @@ export async function listCharacters(): Promise<Character[]> {
 }
 
 /**
+ * Create new character with advanced settings
+ */
+export async function createCharacter(characterData: {
+  name: string;
+  avatar: string;
+  description: string;
+  personality: string;
+  background?: string;
+  language: string;
+  conversationStyle: string;
+  relationshipType: string;
+  emotionalTone: string;
+  category: string;
+  greeting?: string;
+  systemPromptOverride?: string;
+}): Promise<Character> {
+  return fetchAPI<Character>('/api/characters', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(characterData),
+  });
+}
+
+/**
  * Get specific character by ID
  */
 export async function getCharacter(characterId: string): Promise<Character> {
@@ -244,6 +270,7 @@ export default {
   updateModelConfig,
   listModels,
   listCharacters,
+  createCharacter,
   getCharacter,
   clearConversation,
   generateEmbedding,

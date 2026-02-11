@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Sparkles, Wand2, AlertCircle, Globe, Heart, MessageCircle } from '@lucide/svelte';
   import { router } from '@stores/router';
+  import { createCharacter } from '@services/api';
 
   // Core fields
   let characterName = $state('');
@@ -27,6 +28,7 @@
   let isCreating = $state(false);
   let error = $state<string | null>(null);
   let backendAvailable = $state(false);
+  let successMessage = $state<string | null>(null);
 
   // Check if backend character creation endpoint is available
   async function checkBackendAvailability() {
@@ -87,6 +89,7 @@
     try {
       isCreating = true;
       error = null;
+      successMessage = null;
 
       // Construct character payload
       const characterData = {
@@ -102,19 +105,23 @@
         category: selectedCategory
       };
 
-      // TODO: POST to /api/characters with characterData
-      console.log('Creating character:', characterData);
+      // Call backend API to create character
+      const createdCharacter = await createCharacter(characterData);
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      successMessage = `✨ ${createdCharacter.name} has been created successfully!`;
       
-      alert(`✨ Character "${characterName}" akan dibuat dengan:\n- Language: ${primaryLanguage}\n- Relationship: ${relationshipType}\n- Tone: ${emotionalTone}\n\n⚠️ Backend endpoint akan segera diimplementasikan!`);
-      
-      // Reset form
-      resetForm();
+      // Reset form after 3 seconds
+      setTimeout(() => {
+        resetForm();
+        successMessage = null;
+      }, 3000);
       
     } catch (err) {
-      error = err instanceof Error ? err.message : 'Gagal membuat character';
+      if (err instanceof Error) {
+        error = err.message;
+      } else {
+        error = 'Gagal membuat character. Coba lagi.';
+      }
       console.error('Failed to create character:', err);
     } finally {
       isCreating = false;
@@ -150,6 +157,14 @@
     <!-- Form -->
     <div class="bg-white dark:bg-slate-800/50 rounded-3xl border border-gray-200 dark:border-slate-700 p-6 sm:p-8 space-y-8">
       
+      {#if successMessage}
+        <!-- Success Alert -->
+        <div class="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl animate-fade-in">
+          <Sparkles size={20} class="text-green-600 dark:text-green-400 flex-shrink-0" />
+          <p class="text-sm text-green-700 dark:text-green-300 font-medium">{successMessage}</p>
+        </div>
+      {/if}
+
       {#if error}
         <!-- Error Alert -->
         <div class="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">

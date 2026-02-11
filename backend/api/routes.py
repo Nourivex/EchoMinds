@@ -14,6 +14,7 @@ from models.schemas import (
     ModelConfigUpdate,
     SystemStatus,
     CharacterProfile,
+    CharacterCreateRequest,
     ErrorResponse
 )
 from services.chat_service import chat_service
@@ -232,6 +233,45 @@ async def list_characters():
         raise HTTPException(
             status_code=500,
             detail="Could not retrieve characters"
+        )
+
+
+@router.post("/characters", response_model=CharacterProfile, status_code=201)
+async def create_character(request: CharacterCreateRequest):
+    """Create new AI character with advanced settings.
+    
+    This endpoint supports:
+    - Separated personality traits and background lore
+    - Language selection (ID/EN) with enforcement
+    - Relationship dynamics (friend, partner, mentor, custom)
+    - Emotional tone and conversation style
+    - Category tagging
+    
+    Args:
+        request: Character creation request with all settings
+        
+    Returns:
+        Created CharacterProfile
+        
+    Raises:
+        HTTPException: If character creation fails
+    """
+    try:
+        character = character_service.create_character(request)
+        logger.info(f"Character created via API: {character.name} (ID: {character.id})")
+        return character
+    except ValueError as e:
+        # Character with same name exists
+        logger.warning(f"Character creation failed: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(f"Failed to create character: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Could not create character: {str(e)}"
         )
 
 

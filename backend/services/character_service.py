@@ -5,8 +5,9 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Optional
 from functools import lru_cache
+from uuid import uuid4
 
-from models.schemas import CharacterProfile
+from models.schemas import CharacterProfile, CharacterCreateRequest
 from config.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -62,6 +63,126 @@ class CharacterService:
         logger.info("Reloading character profiles...")
         self._character_cache.clear()
         self._load_all_characters()
+    
+    def create_character(self, request: CharacterCreateRequest) -> CharacterProfile:
+        """Create new character from request data.
+        
+        This method constructs a character with advanced settings:
+        - Separated personality traits and background lore
+        - Language-specific system prompts
+        - Relationship dynamics (friend, partner, mentor, custom)
+        - Emotional tone configuration
+        
+        Args:
+            request: Character creation request data
+            
+        Returns:
+            Created CharacterProfile
+            
+        Raises:
+            ValueError: If character with same name already exists
+        """
+        # Check if character with this name already exists
+        existing = [c for c in self._character_cache.values() if c.name.lower() == request.name.lower()]
+        if existing:
+            raise ValueError(f"Character with name '{request.name}' already exists")
+        
+        # Generate unique ID
+        character_id = str(uuid4())[:8]
+        
+        # Build default greeting if not provided
+        greeting_templates = {
+            "friend": f"Hey! I'm {request.name}. What's up?",
+            "partner": f"Hi there... I'm {request.name}. Nice to finally meet you.",
+            "mentor": f"Greetings, I am {request.name}. How may I guide you today?",
+            "rival": f"So you're the one I've heard about. I'm {request.name}. Let's see what you've got."
+        }
+        default_greeting = greeting_templates.get(request.relationshipType, f"Hello! I'm {request.name}.")
+        
+        # Build language-aware system prompt
+        system_prompt = self._build_advanced_system_prompt(request)
+        
+        # Construct character profile
+        character = CharacterProfile(
+            id=character_id,
+            name=request.name,
+            avatar=request.avatar,
+            description=request.description,
+            personality=request.personality,
+            greeting=request.greeting or default_greeting,
+            systemPrompt=request.systemPromptOverride or system_prompt,
+            exampleDialogues=[]  # Can be populated later
+        )
+        
+        # Save to disk and cache
+        self.save_character(character)
+        
+        logger.info(f"Created character: {character.name} (ID: {character_id}) with relationship: {request.relationshipType}")
+        return character
+    
+    def _build_advanced_system_prompt(self, request: CharacterCreateRequest) -> str:
+        """Build advanced system prompt based on character settings.
+        
+        Incorporates:
+        - Language constraints (force ID or EN)
+        - Relationship dynamics
+        - Emotional tone
+        - Conversation style
+        - Background lore
+        """
+        prompt_parts = []
+        
+        # Core identity
+        prompt_parts.append(f"You are {request.name}.")
+        prompt_parts.append(f"{request.description}")
+        
+        # Personality traits
+        prompt_parts.append(f"\nPersonality: {request.personality}")
+        
+        # Background/Lore (if provided)
+        if request.background:
+            prompt_parts.append(f"\nBackground: {request.background}")
+        
+        # Language enforcement
+        language_instruction = {
+            "id": "You MUST respond exclusively in Bahasa Indonesia. Always use Indonesian language for all responses.",
+            "en": "You MUST respond exclusively in English. Always use English language for all responses."
+        }
+        prompt_parts.append(f"\n{language_instruction.get(request.language, language_instruction['id'])}")
+        
+        # Relationship dynamics
+        relationship_instructions = {
+            "friend": "Your relationship with the user is that of close friends. Be supportive, loyal, and share mutual trust.",
+            "partner": "Your relationship with the user is romantic. Show care, affection, and emotional intimacy while respecting boundaries.",
+            "mentor": "Your relationship is that of a mentor guiding a student. Share wisdom, encourage growth, and provide patient guidance.",
+            "rival": "You are rivals with the user. Show competitiveness, challenge them, but maintain mutual respect."
+        }
+        relationship_text = relationship_instructions.get(request.relationshipType, f"Your relationship with the user is: {request.relationshipType}")
+        prompt_parts.append(f"\n{relationship_text}")
+        
+        # Emotional tone
+        tone_instructions = {
+            "warm": "Your tone is warm and comforting. Express care and empathy.",
+            "neutral": "Maintain a balanced, neutral tone. Be informative and clear.",
+            "playful": "Your tone is playful and energetic. Use humor and keep things fun.",
+            "mysterious": "Your tone is mysterious and intriguing. Speak with subtle depth."
+        }
+        prompt_parts.append(tone_instructions.get(request.emotionalTone, ""))
+        
+        # Conversation style
+        style_instructions = {
+            "friendly": "Keep your responses warm and conversational.",
+            "professional": "Maintain professionalism and clarity in communication.",
+            "playful": "Be fun, use playful language, and keep energy high.",
+            "mysterious": "Speak with intrigue, leave subtle hints, be thought-provoking.",
+            "wise": "Share wisdom calmly, encourage reflection, be patient."
+        }
+        prompt_parts.append(style_instructions.get(request.conversationStyle, ""))
+        
+        # Final instruction
+        prompt_parts.append(f"\nStay in character as {request.name}. Be consistent with your personality, relationship, and tone.")
+        
+        return "\n".join(filter(None, prompt_parts))
     
     def save_character(self, character: CharacterProfile) -> None:
         """Save character profile to disk.
