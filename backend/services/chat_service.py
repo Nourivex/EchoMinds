@@ -142,10 +142,10 @@ class ChatService:
                 conversationId=conversation_id or str(uuid4()),
                 context=[
                     ContextMessage(
-                        content=msg.content,
-                        role=msg.role,
-                        timestamp=msg.timestamp,
-                        relevance=msg.metadata.get("relevance", 0.0)
+                        content=msg.get("content", "") if isinstance(msg, dict) else msg.content,
+                        role=msg.get("role", "user") if isinstance(msg, dict) else msg.role,
+                        timestamp=msg.get("timestamp", "") if isinstance(msg, dict) else msg.timestamp,
+                        relevance=msg.get("metadata", {}).get("relevance", 0.0) if isinstance(msg, dict) else msg.metadata.get("relevance", 0.0)
                     )
                     for msg in context_messages
                 ],
@@ -181,10 +181,14 @@ class ChatService:
         if context_messages:
             context_parts = []
             for msg in context_messages[:3]:  # Top 3 most relevant
-                role_label = "User" if msg.role == "user" else "You"
-                relevance = msg.metadata.get("relevance", 0)
+                msg_role = msg.get("role", "user") if isinstance(msg, dict) else msg.role
+                msg_content = msg.get("content", "") if isinstance(msg, dict) else msg.content
+                msg_metadata = msg.get("metadata", {}) if isinstance(msg, dict) else msg.metadata
+                
+                role_label = "User" if msg_role == "user" else "You"
+                relevance = msg_metadata.get("relevance", 0)
                 context_parts.append(
-                    f"{role_label}: {msg.content[:200]} "
+                    f"{role_label}: {msg_content[:200]} "
                     f"(relevance: {relevance:.2f})"
                 )
             context_text = "\n".join(context_parts)
