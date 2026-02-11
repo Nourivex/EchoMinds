@@ -13,46 +13,48 @@
   
   const roleOptions = [
     // Family
-    { id: 'orang-tua', label: 'Orang Tua', desc: 'Parent, protective', category: 'family' },
-    { id: 'anak', label: 'Anak', desc: 'Child, dependent', category: 'family' },
-    { id: 'kakak', label: 'Kakak', desc: 'Older sibling', category: 'family' },
-    { id: 'adik', label: 'Adik', desc: 'Younger sibling', category: 'family' },
-    { id: 'sepupu', label: 'Sepupu', desc: 'Cousin', category: 'family' },
+    { id: 'orang-tua', label: 'Orang Tua', desc: 'Parent, protective', category: 'family', compatibleTypes: ['mentor', 'friend', 'custom'] },
+    { id: 'anak', label: 'Anak', desc: 'Child, dependent', category: 'family', compatibleTypes: ['friend', 'custom'] },
+    { id: 'kakak', label: 'Kakak', desc: 'Older sibling', category: 'family', compatibleTypes: ['friend', 'mentor', 'rival', 'custom'] },
+    { id: 'adik', label: 'Adik', desc: 'Younger sibling', category: 'family', compatibleTypes: ['friend', 'rival', 'custom'] },
+    { id: 'sepupu', label: 'Sepupu', desc: 'Cousin', category: 'family', compatibleTypes: ['friend', 'rival', 'custom'] },
     
     // Social
-    { id: 'sahabat', label: 'Sahabat', desc: 'Best friend', category: 'social' },
-    { id: 'teman', label: 'Teman', desc: 'Friend', category: 'social' },
-    { id: 'tetangga', label: 'Tetangga', desc: 'Neighbor', category: 'social' },
-    { id: 'kenalan', label: 'Kenalan', desc: 'Acquaintance', category: 'social' },
+    { id: 'sahabat', label: 'Sahabat', desc: 'Best friend', category: 'social', compatibleTypes: ['friend', 'custom'] },
+    { id: 'teman', label: 'Teman', desc: 'Friend', category: 'social', compatibleTypes: ['friend', 'rival', 'custom'] },
+    { id: 'tetangga', label: 'Tetangga', desc: 'Neighbor', category: 'social', compatibleTypes: ['friend', 'rival', 'custom'] },
+    { id: 'kenalan', label: 'Kenalan', desc: 'Acquaintance', category: 'social', compatibleTypes: ['friend', 'rival', 'custom'] },
     
     // Academic/Professional
-    { id: 'guru', label: 'Guru', desc: 'Teacher', category: 'academic' },
-    { id: 'murid', label: 'Murid', desc: 'Student', category: 'academic' },
-    { id: 'mentor', label: 'Mentor', desc: 'Guide', category: 'academic' },
-    { id: 'mentee', label: 'Mentee', desc: 'Learner', category: 'academic' },
-    { id: 'senior', label: 'Senior', desc: 'Experienced', category: 'academic' },
-    { id: 'junior', label: 'Junior', desc: 'Learning', category: 'academic' },
-    { id: 'equal', label: 'Equal', desc: 'Balanced', category: 'academic' },
+    { id: 'guru', label: 'Guru', desc: 'Teacher', category: 'academic', compatibleTypes: ['mentor', 'friend', 'custom'] },
+    { id: 'murid', label: 'Murid', desc: 'Student', category: 'academic', compatibleTypes: ['friend', 'custom'] },
+    { id: 'mentor', label: 'Mentor', desc: 'Guide', category: 'academic', compatibleTypes: ['mentor', 'friend', 'custom'] },
+    { id: 'mentee', label: 'Mentee', desc: 'Learner', category: 'academic', compatibleTypes: ['friend', 'custom'] },
+    { id: 'senior', label: 'Senior', desc: 'Experienced', category: 'academic', compatibleTypes: ['mentor', 'friend', 'rival', 'custom'] },
+    { id: 'junior', label: 'Junior', desc: 'Learning', category: 'academic', compatibleTypes: ['friend', 'custom'] },
+    { id: 'equal', label: 'Equal', desc: 'Balanced', category: 'academic', compatibleTypes: ['friend', 'rival', 'partner', 'custom'] },
     
     // Romantic
-    { id: 'pacar', label: 'Pacar', desc: 'Boyfriend/Girlfriend', category: 'romantic' },
-    { id: 'tunangan', label: 'Tunangan', desc: 'Fiancé(e)', category: 'romantic' },
-    { id: 'suami-istri', label: 'Suami/Istri', desc: 'Spouse', category: 'romantic' },
-    { id: 'gebetan', label: 'Gebetan', desc: 'Crush', category: 'romantic' },
+    { id: 'pacar', label: 'Pacar', desc: 'Boyfriend/Girlfriend', category: 'romantic', compatibleTypes: ['partner', 'friend', 'custom'] },
+    { id: 'tunangan', label: 'Tunangan', desc: 'Fiancé(e)', category: 'romantic', compatibleTypes: ['partner', 'friend', 'custom'] },
+    { id: 'suami-istri', label: 'Suami/Istri', desc: 'Spouse', category: 'romantic', compatibleTypes: ['partner', 'friend', 'custom'] },
+    { id: 'gebetan', label: 'Gebetan', desc: 'Crush', category: 'romantic', compatibleTypes: ['friend', 'rival', 'partner', 'custom'] },
     
     // Other
-    { id: 'rival', label: 'Rival', desc: 'Competitor', category: 'other' },
-    { id: 'musuh', label: 'Musuh', desc: 'Enemy', category: 'other' },
-    { id: 'custom', label: 'Custom', desc: 'Your own', category: 'other' }
+    { id: 'rival', label: 'Rival', desc: 'Competitor', category: 'other', compatibleTypes: ['rival', 'friend', 'custom'] },
+    { id: 'musuh', label: 'Musuh', desc: 'Enemy', category: 'other', compatibleTypes: ['rival', 'custom'] },
+    { id: 'custom', label: 'Custom', desc: 'Your own', category: 'other', compatibleTypes: ['friend', 'partner', 'mentor', 'rival', 'custom'] }
   ];
   
   const addressOptions = [
-    { id: 'kamu', label: 'Kamu', context: 'Casual' },
-    { id: 'mas', label: 'Mas', context: 'Respectful (M)' },
-    { id: 'mbak', label: 'Mbak', context: 'Respectful (F)' },
-    { id: 'kakak', label: 'Kakak', context: 'Older sibling' },
-    { id: 'adik', label: 'Adik', context: 'Younger' },
-    { id: 'sayang', label: 'Sayang', context: 'Endearing' }
+    { id: 'kamu', label: 'Kamu', context: 'Casual', suitableFor: ['teman', 'sahabat', 'equal', 'pacar', 'gebetan', 'sepupu', 'kenalan'] },
+    { id: 'mas', label: 'Mas', context: 'Respectful (M)', suitableFor: ['kakak', 'senior', 'guru', 'mentor', 'orang-tua', 'suami-istri', 'tetangga'] },
+    { id: 'mbak', label: 'Mbak', context: 'Respectful (F)', suitableFor: ['kakak', 'senior', 'guru', 'mentor', 'orang-tua', 'suami-istri', 'tetangga'] },
+    { id: 'kakak', label: 'Kakak', context: 'Older sibling', suitableFor: ['kakak', 'senior', 'mentor'] },
+    { id: 'adik', label: 'Adik', context: 'Younger', suitableFor: ['adik', 'junior', 'murid', 'anak'] },
+    { id: 'sayang', label: 'Sayang', context: 'Endearing', suitableFor: ['pacar', 'tunangan', 'suami-istri', 'anak', 'adik'] },
+    { id: 'pak', label: 'Pak', context: 'Formal (M)', suitableFor: ['guru', 'orang-tua', 'mentor'] },
+    { id: 'bu', label: 'Bu', context: 'Formal (F)', suitableFor: ['guru', 'orang-tua', 'mentor'] }
   ];
   
   const ageOptions = [
@@ -73,6 +75,91 @@
     { id: 'playful', label: 'Playful', emoji: '😄' },
     { id: 'mysterious', label: 'Mysterious', emoji: '🌙' }
   ];
+
+  // Smart label suggestions based on type + role
+  const labelSuggestions = $derived.by(() => {
+    const type = $companionForm.relationship.type;
+    const role = $companionForm.relationship.role;
+    const userName = $companionForm.relationship.userName;
+    
+    const map: Record<string, Record<string, string>> = {
+      'friend': {
+        'sahabat': `sahabat terbaik ${userName}`,
+        'teman': `teman dekat ${userName}`,
+        'kakak': `kakak yang supportive`,
+        'adik': `adik yang ceria`,
+        'sepupu': `sepupu kesayangan`,
+        'default': `teman ${userName}`
+      },
+      'partner': {
+        'pacar': `kekasih ${userName}`,
+        'tunangan': `calon suami/istri ${userName}`,
+        'suami-istri': `pasangan hidup ${userName}`,
+        'gebetan': `gebetan ${userName}`,
+        'equal': `partner hidup ${userName}`,
+        'default': `partner ${userName}`
+      },
+      'mentor': {
+        'orang-tua': `orang tua ${userName}`,
+        'guru': `guru ${userName}`,
+        'mentor': `mentor ${userName}`,
+        'kakak': `kakak pembimbing`,
+        'senior': `senior yang mengayomi`,
+        'default': `mentor ${userName}`
+      },
+      'rival': {
+        'rival': `rival utama ${userName}`,
+        'musuh': `musuh bebuyutan ${userName}`,
+        'teman': `teman sekaligus rival`,
+        'kakak': `kakak yang kompetitif`,
+        'default': `rival ${userName}`
+      }
+    };
+    
+    const typeMap = map[type] || map['friend'];
+    return typeMap[role] || typeMap['default'] || '';
+  });
+
+  // Smart address suggestions
+  const suggestedAddresses = $derived.by(() => {
+    const role = $companionForm.relationship.role;
+    return addressOptions.filter(addr => addr.suitableFor.includes(role));
+  });
+
+  // Check if type-role combination is compatible
+  const isCompatibleCombination = $derived.by(() => {
+    const type = $companionForm.relationship.type;
+    const role = $companionForm.relationship.role;
+    
+    const roleData = roleOptions.find(r => r.id === role);
+    if (!roleData) return true; // Custom always compatible
+    
+    return roleData.compatibleTypes.includes(type);
+  });
+
+  // Auto-update label when type or role changes
+  $effect(() => {
+    const currentLabel = $companionForm.relationship.label;
+    const suggested = labelSuggestions;
+    
+    // Only auto-update if label is empty or matches old suggestion
+    if (!currentLabel || currentLabel.includes('undefined')) {
+      updateRelationship({ label: suggested });
+    }
+  });
+
+  // Auto-select first suitable address when role changes
+  $effect(() => {
+    const suggested = suggestedAddresses;
+    const currentAddress = $companionForm.relationship.preferredAddress;
+    
+    // Check if current address is suitable for role
+    const isCurrentSuitable = suggested.some(addr => addr.id === currentAddress);
+    
+    if (!isCurrentSuitable && suggested.length > 0) {
+      updateRelationship({ preferredAddress: suggested[0].id });
+    }
+  });
 </script>
 
 <div class="space-y-6">
@@ -117,17 +204,29 @@
           <!-- Preferred Address -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
-              Cara Panggil *
+              Cara Panggil * <span class="text-xs text-green-600">✨ Smart</span>
             </label>
             <select
               value={$companionForm.relationship.preferredAddress}
               onchange={(e) => updateRelationship({ preferredAddress: e.currentTarget.value })}
               class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
             >
-              {#each addressOptions as addr}
-                <option value={addr.id}>{addr.label} ({addr.context})</option>
-              {/each}
+              <optgroup label="✨ Cocok untuk role ini">
+                {#each suggestedAddresses as addr}
+                  <option value={addr.id}>{addr.label} ({addr.context})</option>
+                {/each}
+              </optgroup>
+              {#if suggestedAddresses.length < addressOptions.length}
+                <optgroup label="Opsi lainnya">
+                  {#each addressOptions.filter(a => !suggestedAddresses.includes(a)) as addr}
+                    <option value={addr.id}>{addr.label} ({addr.context})</option>
+                  {/each}
+                </optgroup>
+              {/if}
             </select>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Auto-pilih yang cocok dengan role kamu
+            </p>
           </div>
         </div>
       </div>
@@ -200,11 +299,41 @@
     {/if}
   </div>
 
+  <!-- Compatibility Warning -->
+  {#if !isCompatibleCombination}
+    <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-300 dark:border-amber-700 rounded-xl p-4 flex items-start gap-3">
+      <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+      </svg>
+      <div>
+        <p class="text-sm font-semibold text-amber-900 dark:text-amber-100 mb-1">
+          ⚠️ Kombinasi Tidak Biasa Terdeteksi
+        </p>
+        <p class="text-xs text-amber-700 dark:text-amber-300">
+          <strong>Type "{$companionForm.relationship.type}"</strong> dengan <strong>Role "{$companionForm.relationship.role}"</strong> agak aneh. 
+          Misalnya: "orang tua" sebagai "rival" 🤣<br/>
+          <span class="text-xs mt-1 inline-block">💡 Pertimbangkan ubah salah satu atau gunakan "Custom" jika memang disengaja.</span>
+        </p>
+      </div>
+    </div>
+  {/if}
+
   <!-- Relationship Label (Optional) -->
   <div>
-    <label for="label" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-      Relationship Label <span class="text-xs text-slate-500">(Opsional)</span>
-    </label>
+    <div class="flex items-center justify-between mb-2">
+      <label for="label" class="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+        Relationship Label <span class="text-xs text-slate-500">(Opsional)</span> <span class="text-xs text-green-600">✨ Smart</span>
+      </label>
+      {#if labelSuggestions}
+        <button
+          type="button"
+          onclick={() => updateRelationship({ label: labelSuggestions })}
+          class="text-xs text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium"
+        >
+          Gunakan saran
+        </button>
+      {/if}
+    </div>
     <input
       type="text"
       id="label"
@@ -213,6 +342,11 @@
       placeholder="e.g., 'adik kandung', 'sahabat sejak kecil'"
       class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-purple-500 outline-none"
     />
+    {#if labelSuggestions && labelSuggestions !== $companionForm.relationship.label}
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+        💡 Saran: <span class="text-purple-600 dark:text-purple-400 font-medium">{labelSuggestions}</span>
+      </p>
+    {/if}
   </div>
 
   <!-- Age & Authority -->
