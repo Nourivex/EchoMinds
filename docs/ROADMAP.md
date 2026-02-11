@@ -28,9 +28,12 @@
 - ✅ Chat message actions (copy, regenerate, delete)
 - ✅ Decoupled chat routing (integrated into MyChatsPage)
 - ✅ Settings page with backend integration (model selector, sliders)
+- ✅ **Structured message system (dialogue/action/thought)**
+- ✅ **Translation toggle (optional, collapsible)**
+- ✅ **Message part components (ActionPart, DialoguePart, ThoughtPart)**
 
 **Git Status**
-- 23 commits total
+- 29 commits total
 - Main branch clean
 - All features properly documented
 
@@ -38,18 +41,20 @@
 
 ## 🚧 Known Issues
 
-### Critical (P0)
-1. **CORS Error on `/api/config`**
-   - Status: Documented in `CORS_FIX.md`
-   - Impact: Settings page cannot save configuration
-   - ETA: 15 minutes to fix
+### ~~Critical (P0)~~ ✅ RESOLVED
+1. **~~CORS Error on `/api/config`~~** ✅
+   - Status: **FIXED** (Feb 11, 2026)
+   - Solution: Fixed JSON parsing in settings.py, added CORS logging
+   - Result: Settings page now saves configuration successfully
    
-### High Priority (P1)
-2. **Chat Message Display - Not Immersive**
-   - Status: Planned in `IMMERSIVE_CHAT_PLAN.md`
-   - Issue: Flat text, bilingual display cluttered
+### ~~High Priority (P1)~~ ✅ IMPLEMENTED
+2. **~~Chat Message Display - Not Immersive~~** ✅
+   - Status: **IMPLEMENTED** (Feb 11, 2026)
    - Solution: Structured message format (dialogue/action/thought)
-   - ETA: 2-3 work sessions (~19 hours)
+   - Implementation: Backend parser + Frontend components + Translation toggle
+   - Files: 
+     * Backend: `services/message_parser.py`, schemas updates
+     * Frontend: `message-parts/` components, ChatInterface updates
 
 ### Medium Priority (P2)
 3. **No Memory Management UI**
@@ -230,14 +235,14 @@
 
 | Phase | Feature | Priority | Status | ETA |
 |-------|---------|----------|--------|-----|
-| 0 | Fix CORS issue | P0 | Pending | 15 min |
-| 1 | Immersive chat system | P1 | Planning | 19 hours |
+| 0 | Fix CORS issue | P0 | ✅ Complete | - |
+| 1 | Immersive chat system | P1 | ✅ Complete | - |
 | 2 | Memory management UI | P2 | Pending | 8 hours |
 | 3 | Advanced scene features | P2 | Pending | 12 hours |
 | 4 | Model management | P2 | Pending | 6 hours |
 | 5 | Conversation enhancements | P3 | Future | 15 hours |
 
-**Total Remaining Work:** ~60 hours (~8 work sessions)
+**Total Remaining Work:** ~41 hours (~5 work sessions)
 
 ---
 
