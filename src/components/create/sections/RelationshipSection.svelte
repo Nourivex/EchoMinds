@@ -47,8 +47,6 @@
     { id: 'playful', label: 'Playful', emoji: '😄' },
     { id: 'mysterious', label: 'Mysterious', emoji: '🌙' }
   ];
-
-  let form = $companionForm.relationship;
 </script>
 
 <div class="space-y-6">
@@ -83,7 +81,7 @@
             <input
               type="text"
               id="userName"
-              value={form.userName}
+              value={$companionForm.relationship.userName}
               oninput={(e) => updateRelationship({ userName: e.currentTarget.value })}
               placeholder="e.g., Lycus, Kak Budi, Sarah"
               class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 outline-none"
@@ -96,7 +94,7 @@
               Cara Panggil *
             </label>
             <select
-              value={form.preferredAddress}
+              value={$companionForm.relationship.preferredAddress}
               onchange={(e) => updateRelationship({ preferredAddress: e.currentTarget.value })}
               class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
             >
@@ -121,7 +119,7 @@
           type="button"
           onclick={() => updateRelationship({ type: rel.id })}
           class="flex flex-col gap-1 p-3 rounded-xl border-2 transition-all text-left {
-            form.type === rel.id
+            $companionForm.relationship.type === rel.id
               ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-md'
               : 'border-gray-200 dark:border-slate-700 hover:border-purple-300'
           }"
@@ -132,10 +130,10 @@
       {/each}
     </div>
     
-    {#if form.type === 'custom'}
+    {#if $companionForm.relationship.type === 'custom'}
       <input
         type="text"
-        value={form.customType || ''}
+        value={$companionForm.relationship.customType || ''}
         oninput={(e) => updateRelationship({ customType: e.currentTarget.value })}
         placeholder="e.g., Childhood friend, Mysterious ally..."
         class="w-full mt-3 px-4 py-3 bg-white dark:bg-slate-900 border border-purple-300 dark:border-purple-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-purple-500 outline-none"
@@ -154,7 +152,7 @@
           type="button"
           onclick={() => updateRelationship({ role: role.id })}
           class="flex flex-col gap-1 p-3 rounded-xl border-2 transition-all text-left {
-            form.role === role.id
+            $companionForm.relationship.role === role.id
               ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
               : 'border-gray-200 dark:border-slate-700 hover:border-purple-300'
           }"
@@ -165,10 +163,10 @@
       {/each}
     </div>
     
-    {#if form.role === 'custom'}
+    {#if $companionForm.relationship.role === 'custom'}
       <input
         type="text"
-        value={form.customRole || ''}
+        value={$companionForm.relationship.customRole || ''}
         oninput={(e) => updateRelationship({ customRole: e.currentTarget.value })}
         placeholder="e.g., Sepupu, Guru, Tetangga..."
         class="w-full mt-3 px-4 py-3 bg-white dark:bg-slate-900 border border-purple-300 dark:border-purple-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-purple-500 outline-none"
@@ -184,7 +182,7 @@
     <input
       type="text"
       id="label"
-      value={form.label}
+      value={$companionForm.relationship.label}
       oninput={(e) => updateRelationship({ label: e.currentTarget.value })}
       placeholder="e.g., 'adik kandung', 'sahabat sejak kecil'"
       class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-purple-500 outline-none"
@@ -204,7 +202,7 @@
             type="button"
             onclick={() => updateRelationship({ ageRelation: age.id })}
             class="w-full flex justify-between items-center p-3 rounded-lg border-2 transition-all {
-              form.ageRelation === age.id
+              $companionForm.relationship.ageRelation === age.id
                 ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
                 : 'border-gray-200 dark:border-slate-700 hover:border-purple-300'
             }"
@@ -213,7 +211,7 @@
               <div class="text-sm font-semibold text-slate-900 dark:text-slate-100">{age.label}</div>
               <div class="text-xs text-slate-500 dark:text-slate-400">{age.desc}</div>
             </div>
-            {#if form.ageRelation === age.id}
+            {#if $companionForm.relationship.ageRelation === age.id}
               <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
               </svg>
@@ -234,7 +232,7 @@
             type="button"
             onclick={() => updateRelationship({ authorityLevel: auth.id })}
             class="w-full flex justify-between items-center p-3 rounded-lg border-2 transition-all {
-              form.authorityLevel === auth.id
+              $companionForm.relationship.authorityLevel === auth.id
                 ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
                 : 'border-gray-200 dark:border-slate-700 hover:border-purple-300'
             }"
@@ -243,7 +241,7 @@
               <div class="text-sm font-semibold text-slate-900 dark:text-slate-100">{auth.label}</div>
               <div class="text-xs text-slate-500 dark:text-slate-400">{auth.desc}</div>
             </div>
-            {#if form.authorityLevel === auth.id}
+            {#if $companionForm.relationship.authorityLevel === auth.id}
               <svg class="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
               </svg>
@@ -264,7 +262,7 @@
         <OptionCard
           label={tone.label}
           emoji={tone.emoji}
-          selected={form.emotionalTone === tone.id}
+          selected={$companionForm.relationship.emotionalTone === tone.id}
           onclick={() => updateRelationship({ emotionalTone: tone.id })}
         />
       {/each}

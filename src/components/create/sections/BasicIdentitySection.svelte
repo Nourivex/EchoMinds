@@ -11,7 +11,6 @@
     { id: 'adventure', label: 'Adventure', icon: '⚡' }
   ];
 
-  let form = $companionForm.basic;
 </script>
 
 <div class="space-y-6">
@@ -35,7 +34,7 @@
           type="button"
           onclick={() => updateBasic({ avatar })}
           class="w-full aspect-square text-2xl rounded-xl border-2 transition-all {
-            form.avatar === avatar
+            $companionForm.basic.avatar === avatar
               ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 scale-110 shadow-lg'
               : 'border-gray-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-600 hover:scale-105'
           }"
@@ -54,7 +53,7 @@
     <input
       id="name"
       type="text"
-      value={form.name}
+      value={$companionForm.basic.name}
       oninput={(e) => updateBasic({ name: e.currentTarget.value })}
       placeholder="e.g., Luna, Kai, Nova..."
       class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
@@ -69,7 +68,7 @@
     <input
       id="description"
       type="text"
-      value={form.description}
+      value={$companionForm.basic.description}
       oninput={(e) => updateBasic({ description: e.currentTarget.value })}
       placeholder="One-line tagline (e.g., 'Your creative companion')"
       class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
@@ -87,7 +86,7 @@
           type="button"
           onclick={() => updateBasic({ category: cat.id })}
           class="flex items-center gap-2 p-3 rounded-xl border-2 transition-all {
-            form.category === cat.id
+            $companionForm.basic.category === cat.id
               ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-md'
               : 'border-gray-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-600'
           }"

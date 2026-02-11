@@ -15,8 +15,6 @@
     { id: 'mysterious', label: 'Mysterious', icon: '🎭' },
     { id: 'wise', label: 'Wise & Calm', icon: '🧘' }
   ];
-
-  let form = $companionForm.communication;
 </script>
 
 <div class="space-y-6">
@@ -40,7 +38,7 @@
         <OptionCard
           label={lang.label}
           emoji={lang.flag}
-          selected={form.language === lang.id}
+          selected={$companionForm.communication.language === lang.id}
           onclick={() => updateCommunication({ language: lang.id })}
         />
       {/each}
@@ -57,7 +55,7 @@
         <OptionCard
           label={style.label}
           emoji={style.icon}
-          selected={form.style === style.id}
+          selected={$companionForm.communication.style === style.id}
           onclick={() => updateCommunication({ style: style.id })}
         />
       {/each}

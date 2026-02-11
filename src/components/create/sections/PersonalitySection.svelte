@@ -1,7 +1,5 @@
 <script lang="ts">
   import { updatePersonality, companionForm } from '@stores/companionForm';
-  
-  let form = $companionForm.personality;
 </script>
 
 <div class="space-y-6">
@@ -21,7 +19,7 @@
     </label>
     <textarea
       id="traits"
-      value={form.traits}
+      value={$companionForm.personality.traits}
       oninput={(e) => updatePersonality({ traits: e.currentTarget.value })}
       placeholder="e.g., Calm, empathetic, curious, loves deep conversations..."
       rows="4"
@@ -39,7 +37,7 @@
     </label>
     <textarea
       id="background"
-      value={form.background}
+      value={$companionForm.personality.background}
       oninput={(e) => updatePersonality({ background: e.currentTarget.value })}
       placeholder="Their story, profession, where they come from... (optional but makes them richer)"
       rows="4"
