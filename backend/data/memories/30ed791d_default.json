@@ -1,0 +1,19 @@
+{
+  "characterId": "30ed791d",
+  "userId": "default",
+  "lastUpdated": "2026-02-11T05:45:53.151771",
+  "memories": [
+    {
+      "id": "0a68bb80",
+      "characterId": "30ed791d",
+      "userId": "default",
+      "content": "Lycus suka coding sambil dengerin musik synthwave",
+      "memoryType": "factual",
+      "importance": 0.8,
+      "isPinned": true,
+      "createdAt": "2026-02-11T05:45:53.151771",
+      "updatedAt": "2026-02-11T05:45:53.151771",
+      "metadata": {}
+    }
+  ]
+}

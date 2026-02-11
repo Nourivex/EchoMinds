@@ -1,4 +1,4 @@
-"""Chat service orchestrating LLM, RAG, and character management."""
+"""Chat service orchestrating LLM, RAG, character management, and long-term memory."""
 
 import logging
 import time
@@ -13,6 +13,7 @@ from models.schemas import (
     ContextMessage
 )
 from services.character_service import character_service
+from services.memory_service import memory_service
 from llm.ollama_service import ollama_service
 from rag.vector_service import rag_service
 from config.settings import settings
@@ -75,7 +76,17 @@ class ChatService:
         )
         
         try:
-            # 3. Retrieve RAG context
+            # 3. Retrieve long-term memories
+            memories = memory_service.get_relevant_memories(
+                character_id=character_id,
+                user_id=user_id,
+                query=message,
+                limit=8  # Top 8 relevant memories
+            )
+            
+            logger.debug(f"Retrieved {len(memories)} long-term memories")
+            
+            # 4. Retrieve RAG context
             context_messages = await rag_service.retrieve_context(
                 character_id=character_id,
                 user_id=user_id,
@@ -85,7 +96,7 @@ class ChatService:
             
             logger.debug(f"Retrieved {len(context_messages)} context messages")
             
-            # 4. Get recent conversation history
+            # 5. Get recent conversation history
             history = await rag_service.get_recent_messages(
                 character_id=character_id,
                 user_id=user_id,
@@ -94,13 +105,14 @@ class ChatService:
             
             logger.debug(f"Retrieved {len(history)} recent messages")
             
-            # 5. Build prompt
+            # 6. Build prompt with memories
             system_prompt = self._build_system_prompt(
                 character_id=character_id,
-                context_messages=context_messages
+                context_messages=context_messages,
+                memories=memories
             )
             
-            # 6. Generate LLM response
+            # 7. Generate LLM response
             ai_response = await ollama_service.generate(
                 prompt=message,
                 system_prompt=system_prompt,
@@ -135,7 +147,7 @@ class ChatService:
                 metadata={"conversation_id": conv_id, "timestamp": datetime.now().isoformat()}
             )
             
-            # 8. Return response
+            # 9. Return response
             return ChatResponse(
                 reply=ai_response,
                 characterName=character.name,
@@ -164,13 +176,15 @@ class ChatService:
     def _build_system_prompt(
         self,
         character_id: str,
-        context_messages: List[ConversationMessage]
+        context_messages: List[ConversationMessage],
+        memories: List = None
     ) -> str:
-        """Build system prompt with character personality and context.
+        """Build system prompt with character personality, context, and long-term memories.
         
         Args:
             character_id: Character identifier
             context_messages: RAG retrieved context
+            memories: Long-term memory entries
             
         Returns:
             Complete system prompt string
@@ -178,8 +192,24 @@ class ChatService:
         # Get base system prompt with character personality
         context_text = None
         
+        # 1. Inject long-term memories first (most important)
+        memory_context = None
+        if memories:
+            memory_parts = ["=== LONG-TERM MEMORIES ==="]
+            memory_parts.append("Things you remember about this user and your relationship:\n")
+            
+            for mem in memories:
+                # Pinned memories get priority marker
+                pin_marker = "📌 " if mem.isPinned else ""
+                type_label = mem.memoryType.upper()
+                
+                memory_parts.append(f"{pin_marker}[{type_label}] {mem.content}")
+            
+            memory_context = "\n".join(memory_parts)
+        
+        # 2. Add conversation context (RAG)
         if context_messages:
-            context_parts = []
+            context_parts = ["=== RECENT CONTEXT ==="]
             for msg in context_messages[:3]:  # Top 3 most relevant
                 msg_role = msg.get("role", "user") if isinstance(msg, dict) else msg.role
                 msg_content = msg.get("content", "") if isinstance(msg, dict) else msg.content
@@ -193,10 +223,22 @@ class ChatService:
                 )
             context_text = "\n".join(context_parts)
         
-        return character_service.build_system_prompt(
+        # 3. Build complete prompt
+        base_prompt = character_service.build_system_prompt(
             character_id=character_id,
             context=context_text
         )
+        
+        # Inject memories at the top (after character identity)
+        if memory_context:
+            # Split base prompt to inject memories after character identity
+            prompt_parts = base_prompt.split("\n\n", 1)
+            if len(prompt_parts) == 2:
+                return f"{prompt_parts[0]}\n\n{memory_context}\n\n{prompt_parts[1]}"
+            else:
+                return f"{base_prompt}\n\n{memory_context}"
+        
+        return base_prompt
     
     def _build_message_history(
         self,

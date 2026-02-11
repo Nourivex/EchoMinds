@@ -20,6 +20,14 @@ class ChatRole(str, Enum):
     SYSTEM = "system"
 
 
+class MemoryType(str, Enum):
+    """Memory entry types"""
+    FACTUAL = "factual"        # Facts about user or relationship
+    EMOTIONAL = "emotional"    # Emotional moments (hurt, happy, etc)
+    PINNED = "pinned"          # User-pinned important memories
+    AUTO = "auto"              # Auto-generated from conversations
+
+
 # ============ API Request Models ============
 
 class ChatMessage(BaseModel):
@@ -73,6 +81,23 @@ class CharacterCreateRequest(BaseModel):
     systemPromptOverride: Optional[str] = Field(None, description="Custom system prompt (advanced)")
 
 
+class MemoryCreateRequest(BaseModel):
+    """Request to create a memory entry"""
+    content: str = Field(..., min_length=1, max_length=500, description="Memory content")
+    memoryType: MemoryType = Field(default=MemoryType.FACTUAL, description="Type of memory")
+    importance: float = Field(default=0.5, ge=0.0, le=1.0, description="Importance score (0-1)")
+    isPinned: bool = Field(default=False, description="Whether memory is pinned")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
+
+
+class MemoryUpdateRequest(BaseModel):
+    """Request to update a memory entry"""
+    content: Optional[str] = Field(None, min_length=1, max_length=500)
+    importance: Optional[float] = Field(None, ge=0.0, le=1.0)
+    isPinned: Optional[bool] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+
 # ============ API Response Models ============
 
 class ContextMessage(BaseModel):
@@ -84,8 +109,8 @@ class ContextMessage(BaseModel):
 
 
 class ChatResponse(BaseModel):
-    """Chat API response"""
-    reply: str = Field(..., description="AI-generated response")
+    """Chat response with context"""
+    reply: str = Field(..., description="AI-generated reply")
     characterName: str = Field(..., description="Character name")
     conversationId: str = Field(..., description="Conversation ID")
     context: List[ContextMessage] = Field(default_factory=list, description="Retrieved context messages")
@@ -98,12 +123,35 @@ class ChatResponse(BaseModel):
 class SystemStatus(BaseModel):
     """System status response"""
     status: str = Field(..., description="Overall system status")
+    version: str = Field(..., description="Application version")
     llm_provider: str = Field(..., description="Active LLM provider")
     model_loaded: str = Field(..., description="Currently loaded model")
+    
+    # Component Health
+    components: Dict[str, str] = Field(..., description="Component status (healthy/degraded/down)")
+    
+    # Metrics
+    metrics: Dict[str, int] = Field(..., description="System metrics (characters, memories, etc)")
+    
+    # Resource Usage
     gpu_available: bool = Field(..., description="GPU availability")
     cpu_usage: float = Field(..., ge=0, le=100, description="CPU usage percentage")
     memory_usage: float = Field(..., ge=0, le=100, description="Memory usage percentage")
     uptime_seconds: float = Field(..., description="Server uptime")
+
+
+class MemoryEntry(BaseModel):
+    """Memory entry response"""
+    id: str = Field(..., description="Unique memory ID")
+    characterId: str = Field(..., description="Character this memory belongs to")
+    userId: str = Field(..., description="User this memory is about")
+    content: str = Field(..., description="Memory content")
+    memoryType: MemoryType = Field(..., description="Type of memory")
+    importance: float = Field(..., ge=0.0, le=1.0, description="Importance score")
+    isPinned: bool = Field(..., description="Whether pinned by user")
+    createdAt: str = Field(..., description="Creation timestamp (ISO 8601)")
+    updatedAt: str = Field(..., description="Last update timestamp (ISO 8601)")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
 
 class ModelConfig(BaseModel):
