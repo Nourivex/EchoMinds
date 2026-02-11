@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { mockCharacters } from '@lib/data/mockData';
+  import type { Character } from '@lib/types';
+  import { listCharacters } from '@services/api';
   import { ChevronDown, Sparkles } from '@lucide/svelte';
 
   interface Props {
@@ -8,41 +9,100 @@
 
   let { onCharacterSelect }: Props = $props();
 
-  // Featured character (handpicked)
-  const featuredCharacter = mockCharacters[3]; // Yuki - perfect for emotional connection
+  // State management
+  let characters = $state<Character[]>([]);
+  let loading = $state(true);
+  let error = $state<string | null>(null);
 
-  // Curated companions (max 6, emotional hooks)
-  const curatedCompanions = [
-    {
-      ...mockCharacters[0], // Luna
-      emotionalHook: 'Misterius, bijaksana, selalu punya waktu untukmu'
-    },
-    {
-      ...mockCharacters[1], // Kai
-      emotionalHook: 'Pelindung setia yang percaya pada potensimu'
-    },
-    {
-      ...mockCharacters[5], // Aria
-      emotionalHook: 'Cheerful, energik, bikin hari-mu lebih berwarna'
-    },
-    {
-      ...mockCharacters[2], // Dr. Nova
-      emotionalHook: 'Curious, smart, suka mengeksplor ide baru denganmu'
-    },
-    {
-      ...mockCharacters[7], // Zen
-      emotionalHook: 'Tenang, mindful, mengajarkan cara menemukan peace'
-    },
-    {
-      ...mockCharacters[4], // Shadow
-      emotionalHook: 'Mysterious, intens, membawa petualangan seru'
+  // Emotional hooks mapping (fallback untuk karakterisasi)
+  const emotionalHooks: Record<string, string> = {
+    luna: 'Misterius, bijaksana, selalu punya waktu untukmu',
+    kai: 'Pelindung setia yang percaya pada potensimu',
+    aria: 'Cheerful, energik, bikin hari-mu lebih berwarna',
+    nova: 'Curious, smart, suka mengeksplor ide baru denganmu',
+    zen: 'Tenang, mindful, mengajarkan cara menemukan peace',
+    shadow: 'Mysterious, intens, membawa petualangan seru',
+    yuki: 'Empatis, hangat, selalu mengerti perasaanmu'
+  };
+
+  // Load characters from backend
+  async function loadCharacters() {
+    try {
+      loading = true;
+      error = null;
+      const data = await listCharacters();
+      characters = data;
+    } catch (err) {
+      error = err instanceof Error ? err.message : 'Gagal memuat karakter';
+      console.error('Failed to load characters:', err);
+    } finally {
+      loading = false;
     }
-  ];
+  }
+
+  // Load on component mount
+  $effect(() => {
+    loadCharacters();
+  });
+
+  // Derived values - featured character (first one with yuki-like personality or just first)
+  const featuredCharacter = $derived(
+    characters.find(c => c.personality?.toLowerCase().includes('empathetic')) || characters[0]
+  );
+
+  // Curated companions (limit to 6)
+  const curatedCompanions = $derived(
+    characters.slice(0, 6).map(char => ({
+      ...char,
+      emotionalHook: emotionalHooks[char.id.toLowerCase()] || 
+                     char.personality?.split('.')[0] || 
+                     'Companion yang siap menemanimu'
+    }))
+  );
 </script>
 
 <div class="h-full overflow-y-auto bg-gradient-to-b from-gray-50 via-gray-100 to-gray-200 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 pb-20">
   
-  <!-- Hero Section: Reduced height (70vh) -->
+  {#if loading}
+    <!-- Loading State -->
+    <section class="relative min-h-[85vh] sm:min-h-[70vh] md:min-h-[75vh] flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+      <div class="absolute inset-0 bg-gradient-to-br from-purple-100/40 via-blue-100/20 to-gray-50/40 dark:from-purple-900/20 dark:via-blue-900/10 dark:to-slate-900/40"></div>
+      <div class="relative text-center">
+        <div class="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mb-4 mx-auto"></div>
+        <p class="text-slate-600 dark:text-slate-400">Loading companions...</p>
+      </div>
+    </section>
+
+  {:else if error}
+    <!-- Error State -->
+    <section class="relative min-h-[85vh] sm:min-h-[70vh] md:min-h-[75vh] flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+      <div class="absolute inset-0 bg-gradient-to-br from-purple-100/40 via-blue-100/20 to-gray-50/40 dark:from-purple-900/20 dark:via-blue-900/10 dark:to-slate-900/40"></div>
+      <div class="relative text-center max-w-md">
+        <div class="text-6xl mb-4">⚠️</div>
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-3">Oops! Something went wrong</h2>
+        <p class="text-slate-600 dark:text-slate-400 mb-6">{error}</p>
+        <button 
+          onclick={loadCharacters}
+          class="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-full font-medium transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+    </section>
+
+  {:else if !featuredCharacter || characters.length === 0}
+    <!-- No Characters State -->
+    <section class="relative min-h-[85vh] sm:min-h-[70vh] md:min-h-[75vh] flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+      <div class="absolute inset-0 bg-gradient-to-br from-purple-100/40 via-blue-100/20 to-gray-50/40 dark:from-purple-900/20 dark:via-blue-900/10 dark:to-slate-900/40"></div>
+      <div class="relative text-center max-w-md">
+        <div class="text-6xl mb-4">👥</div>
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-3">No companions available yet</h2>
+        <p class="text-slate-600 dark:text-slate-400">Check back soon for amazing AI companions!</p>
+      </div>
+    </section>
+
+  {:else}
+    <!-- Content: Hero Section -->
   <section class="relative min-h-[85vh] sm:min-h-[70vh] md:min-h-[75vh] flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
     <!-- Background gradient overlay -->
     <div class="absolute inset-0 bg-gradient-to-br from-purple-100/40 via-blue-100/20 to-gray-50/40 dark:from-purple-900/20 dark:via-blue-900/10 dark:to-slate-900/40"></div>
@@ -200,6 +260,8 @@
       EchoMinds · Your personal AI companion space
     </p>
   </footer>
+
+  {/if}
 
 </div>
 

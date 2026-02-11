@@ -1,15 +1,44 @@
 <script lang="ts">
-  import { mockCharacters } from '@lib/data/mockData';
+  import type { Character } from '@lib/types';
+  import { listCharacters } from '@services/api';
   import { router } from '@stores/router';
   import { MessageSquare, Clock } from '@lucide/svelte';
 
-  // Mock chat history
-  const chatHistory = mockCharacters.slice(0, 5).map((char, idx) => ({
-    character: char,
-    lastMessage: 'Hey! How are you doing today?',
-    timestamp: new Date(Date.now() - idx * 3600000), // Hours ago
-    unread: idx < 2 ? Math.floor(Math.random() * 3) + 1 : 0
-  }));
+  // API State
+  let characters = $state<Character[]>([]);
+  let loading = $state(true);
+  let error = $state<string | null>(null);
+
+  // Load characters from backend
+  async function loadCharacters() {
+    try {
+      loading = true;
+      error = null;
+      const data = await listCharacters();
+      characters = data;
+    } catch (err) {
+      error = err instanceof Error ? err.message : 'Gagal memuat data';
+      console.error('Failed to load characters:', err);
+    } finally {
+      loading = false;
+    }
+  }
+
+  // Load on mount
+  $effect(() => {
+    loadCharacters();
+  });
+
+  // For now, display all available characters as potential chats
+  // TODO: Add backend endpoint GET /api/conversations to fetch actual chat history
+  const chatHistory = $derived(
+    characters.map((char, idx) => ({
+      character: char,
+      lastMessage: 'Start a new conversation or continue where you left off',
+      timestamp: new Date(Date.now() - idx * 3600000),
+      unread: 0 // Real unread count from backend later
+    }))
+  );
 </script>
 
 <div class="h-full overflow-y-auto bg-gradient-to-b from-gray-50 to-white dark:from-slate-950 dark:to-slate-900 px-4 sm:px-6 py-8 pb-20">
@@ -20,8 +49,29 @@
       <p class="text-slate-600 dark:text-slate-400">Continue your conversations</p>
     </div>
 
-    <!-- Chat List -->
-    {#if chatHistory.length > 0}
+    {#if loading}
+      <!-- Loading State -->
+      <div class="text-center py-16">
+        <div class="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mb-4 mx-auto"></div>
+        <p class="text-slate-600 dark:text-slate-400">Loading chats...</p>
+      </div>
+
+    {:else if error}
+      <!-- Error State -->
+      <div class="text-center py-16">
+        <div class="text-6xl mb-4">⚠️</div>
+        <h3 class="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-2">Failed to load chats</h3>
+        <p class="text-slate-500 dark:text-slate-400 mb-4">{error}</p>
+        <button 
+          onclick={loadCharacters}
+          class="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-full font-medium transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+
+    {:else if chatHistory.length > 0}
+      <!-- Chat List -->
       <div class="space-y-3">
         {#each chatHistory as chat}
           <button

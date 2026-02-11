@@ -1,13 +1,48 @@
 <script lang="ts">
   import { theme, toggleTheme } from '@stores/theme';
-  import { Sun, Moon, Bell, Shield, Palette, Globe, HelpCircle } from '@lucide/svelte';
+  import { getModelConfig, listModels } from '@services/api';
+  import { Sun, Moon, Bell, Shield, Palette, Globe, HelpCircle, Cpu } from '@lucide/svelte';
 
   let currentTheme = $state<'light' | 'dark'>('dark');
   let notifications = $state(true);
   let soundEffects = $state(true);
+  
+  // Backend config state
+  let backendModel = $state<string>('');
+  let backendTemperature = $state<number>(0.7);
+  let availableModels = $state<string[]>([]);
+  let loadingConfig = $state(true);
+  let configError = $state<string | null>(null);
 
   theme.subscribe(value => {
     currentTheme = value;
+  });
+
+  // Load backend config
+  async function loadBackendConfig() {
+    try {
+      loadingConfig = true;
+      configError = null;
+      
+      const [config, models] = await Promise.all([
+        getModelConfig(),
+        listModels()
+      ]);
+      
+      backendModel = config.model_name;
+      backendTemperature = config.temperature;
+      availableModels = models;
+    } catch (err) {
+      configError = err instanceof Error ? err.message : 'Gagal memuat konfigurasi';
+      console.error('Failed to load backend config:', err);
+    } finally {
+      loadingConfig = false;
+    }
+  }
+
+  // Load on mount
+  $effect(() => {
+    loadBackendConfig();
   });
 
   const settingsSections = [
@@ -20,6 +55,24 @@
           label: 'Theme',
           description: 'Choose your preferred color theme',
           component: 'theme-toggle'
+        }
+      ]
+    },
+    {
+      title: 'AI Model',
+      icon: Cpu,
+      items: [
+        {
+          id: 'model',
+          label: 'Current Model',
+          description: backendModel || 'Loading...',
+          component: 'text'
+        },
+        {
+          id: 'temperature',
+          label: 'Temperature',
+          description: `Creativity level: ${backendTemperature}`,
+          component: 'text'
         }
       ]
     },
@@ -54,6 +107,12 @@
           label: 'Version',
           description: '1.0.0',
           component: 'text'
+        },
+        {
+          id: 'backend',
+          label: 'Backend Status',
+          description: configError ? '❌ Offline' : '✅ Online',
+          component: 'text'
         }
       ]
     }
@@ -68,7 +127,14 @@
       <p class="text-slate-600 dark:text-slate-400">Customize your experience</p>
     </div>
 
-    <!-- Settings Sections -->
+    {#if loadingConfig}
+      <!-- Loading -->
+      <div class="text-center py-8">
+        <div class="w-12 h-12 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mb-3 mx-auto"></div>
+        <p class="text-sm text-slate-600 dark:text-slate-400">Loading configuration...</p>
+      </div>
+    {:else}
+      <!-- Settings Sections -->
     <div class="space-y-6">
       {#each settingsSections as section}
         <div class="bg-white dark:bg-slate-800/50 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
@@ -114,13 +180,14 @@
               </div>
             {/each}
           </div>
-        </div>
-      {/each}
+      </div>
     </div>
 
     <!-- Footer -->
     <div class="mt-8 mb-8 text-center text-sm text-slate-500 dark:text-slate-400">
       <p>© 2026 EchoMinds. Made with 💜 for meaningful connections.</p>
     </div>
+    
+    {/if}
   </div>
 </div>

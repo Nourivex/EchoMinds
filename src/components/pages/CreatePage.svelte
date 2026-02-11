@@ -1,10 +1,13 @@
 <script lang="ts">
-  import { Sparkles, Image, Wand2 } from '@lucide/svelte';
+  import { Sparkles, Image, Wand2, AlertCircle } from '@lucide/svelte';
+  import { router } from '@stores/router';
 
   let characterName = $state('');
   let characterPersonality = $state('');
   let characterVoice = $state('friendly');
   let selectedAvatar = $state('🤖');
+  let isCreating = $state(false);
+  let error = $state<string | null>(null);
 
   const avatarOptions = ['🤖', '👨', '👩', '🧑', '👦', '👧', '🧒', '👶', '🦸', '🦹', '🧙', '🧚', '🧛', '🧜', '🧝', '🧞'];
   const voiceOptions = [
@@ -15,9 +18,32 @@
     { id: 'wise', label: 'Wise & Calm', icon: '🧘' }
   ];
 
-  function handleCreate() {
-    console.log('Creating character:', { characterName, characterPersonality, characterVoice, selectedAvatar });
-    alert('Character creation coming soon! 🎉');
+  async function handleCreate() {
+    try {
+      isCreating = true;
+      error = null;
+
+      // TODO: Implement POST /api/characters endpoint in backend
+      // For now, show a realistic feedback
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Show success and redirect to home
+      alert(`✨ Character "${characterName}" created successfully!\n\n⚠️ Note: Character creation endpoint belum diimplementasikan di backend.\nUntuk sekarang, ini hanya simulasi UI.`);
+      
+      // Reset form
+      characterName = '';
+      characterPersonality = '';
+      characterVoice = 'friendly';
+      selectedAvatar = '🤖';
+      
+    } catch (err) {
+      error = err instanceof Error ? err.message : 'Gagal membuat character';
+      console.error('Failed to create character:', err);
+    } finally {
+      isCreating = false;
+    }
   }
 </script>
 
@@ -34,6 +60,15 @@
 
     <!-- Form -->
     <div class="bg-white dark:bg-slate-800/50 rounded-3xl border border-gray-200 dark:border-slate-700 p-6 sm:p-8 space-y-6">
+      
+      {#if error}
+        <!-- Error Alert -->
+        <div class="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+          <AlertCircle size={20} class="text-red-600 dark:text-red-400 flex-shrink-0" />
+          <p class="text-sm text-red-700 dark:text-red-300">{error}</p>
+        </div>
+      {/if}
+
       <!-- Avatar Selection -->
       <div>
         <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
@@ -102,12 +137,22 @@
       <!-- Create Button -->
       <button
         onclick={handleCreate}
-        disabled={!characterName.trim() || !characterPersonality.trim()}
+        disabled={!characterName.trim() || !characterPersonality.trim() || isCreating}
         class="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:from-slate-600 disabled:to-slate-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl disabled:shadow-none transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
-        <Sparkles size={20} />
-        <span>Create Companion</span>
+        {#if isCreating}
+          <div class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+          <span>Creating...</span>
+        {:else}
+          <Sparkles size={20} />
+          <span>Create Companion</span>
+        {/if}
       </button>
+
+      <!-- Note for users -->
+      <p class="text-xs text-center text-slate-500 dark:text-slate-400">
+        ⚠️ Character creation endpoint sedang dalam development
+      </p>
     </div>
   </div>
 </div>
