@@ -14,6 +14,10 @@ from models.schemas import (
 )
 from services.character_service import character_service
 from services.memory_service import memory_service
+from services.message_parser import (
+    parse_structured_message,
+    enhance_system_prompt_with_formatting
+)
 from llm.ollama_service import ollama_service
 from rag.vector_service import rag_service
 from config.settings import settings
@@ -127,6 +131,10 @@ class ChatService:
             response_time = time.time() - start_time
             logger.info(f"Generated response in {response_time:.2f}s")
             
+            # Parse structured message
+            structured_content = parse_structured_message(ai_response)
+            logger.debug(f"Parsed structured content: {structured_content.model_dump()}")
+            
             # Generate conversation ID if not provided
             conv_id = conversation_id or str(uuid4())
             
@@ -166,7 +174,8 @@ class ChatService:
                     "tokenCount": len(ai_response.split()),  # Approximate
                     "model": settings.default_model,
                     "contextUsed": len(context_messages)
-                }
+                },
+                structured=structured_content  # Add structured content
             )
             
         except Exception as e:
@@ -228,6 +237,9 @@ class ChatService:
             character_id=character_id,
             context=context_text
         )
+        
+        # Enhance with formatting instructions for structured messages
+        base_prompt = enhance_system_prompt_with_formatting(base_prompt)
         
         # Inject memories at the top (after character identity)
         if memory_context:

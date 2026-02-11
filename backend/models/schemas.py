@@ -109,15 +109,38 @@ class ContextMessage(BaseModel):
     relevance: float = Field(..., ge=0.0, le=1.0, description="Relevance score")
 
 
+class StructuredMessageContent(BaseModel):
+    """Structured message content for immersive chat"""
+    dialogue: Optional[str] = Field(None, description="Spoken dialogue (in quotes)")
+    action: Optional[str] = Field(None, description="Physical action or narration (in asterisks)")
+    thought: Optional[str] = Field(None, description="Internal thought (in parentheses)")
+    emotion: Optional[str] = Field(None, description="Emotional state or expression")
+    
+    # Translation (optional)
+    translation: Optional[Dict[str, str]] = Field(
+        None,
+        description="Translations for dialogue, action, thought"
+    )
+    
+    # Legacy support
+    raw_content: Optional[str] = Field(None, description="Original unstructured message")
+
+
 class ChatResponse(BaseModel):
     """Chat response with context"""
-    reply: str = Field(..., description="AI-generated reply")
+    reply: str = Field(..., description="AI-generated reply (legacy)")
     characterName: str = Field(..., description="Character name")
     conversationId: str = Field(..., description="Conversation ID")
     context: List[ContextMessage] = Field(default_factory=list, description="Retrieved context messages")
     metadata: Dict[str, Any] = Field(
         default_factory=dict,
         description="Additional metadata (tokens, latency, etc.)"
+    )
+    
+    # New structured content (optional, for immersive mode)
+    structured: Optional[StructuredMessageContent] = Field(
+        None,
+        description="Structured message parts (dialogue, action, thought)"
     )
 
 
