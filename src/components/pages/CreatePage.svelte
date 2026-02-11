@@ -190,7 +190,7 @@
     {/if}
 
     <!-- Wizard Container -->
-    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800">
       
       <!-- Step Indicator -->
       <div class="bg-slate-50 dark:bg-slate-800/50 px-6 py-6 border-b border-slate-200 dark:border-slate-700">
