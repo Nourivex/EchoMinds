@@ -27,16 +27,16 @@ class Settings(BaseSettings):
     @field_validator('cors_origins', mode='before')
     @classmethod
     def parse_cors_origins(cls, v):
-        """Parse CORS origins from comma-separated string or list."""
+        """Parse CORS origins from comma-separated string, JSON array, or list."""
         if isinstance(v, str):
-            return [origin.strip() for origin in v.split(',') if origin.strip()]
-        return v
-    
-    @field_validator('cors_origins', mode='before')
-    @classmethod
-    def parse_cors_origins(cls, v):
-        """Parse CORS origins from comma-separated string or list."""
-        if isinstance(v, str):
+            # Try JSON format first (e.g., ["http://...", "http://..."])
+            if v.strip().startswith('['):
+                import json
+                try:
+                    return json.loads(v)
+                except json.JSONDecodeError:
+                    pass
+            # Fallback to comma-separated
             return [origin.strip() for origin in v.split(',') if origin.strip()]
         return v
     
@@ -51,6 +51,10 @@ class Settings(BaseSettings):
     context_length: int = Field(default=4096, env="CONTEXT_LENGTH")
     max_tokens: int = Field(default=512, env="MAX_TOKENS")
     temperature: float = Field(default=0.7, ge=0.0, le=2.0)
+    
+    # Sampling Parameters
+    top_p: float = Field(default=0.9, ge=0.0, le=1.0, env="TOP_P")
+    top_k: int = Field(default=40, ge=1, le=100, env="TOP_K")
     
     # Vector Database
     vector_db_path: Path = Field(default=Path("../data/vectorstore"), env="VECTOR_DB_PATH")

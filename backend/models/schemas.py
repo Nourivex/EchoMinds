@@ -40,12 +40,13 @@ class ChatMessage(BaseModel):
 
 class ModelConfigUpdate(BaseModel):
     """Model configuration update request"""
-    model_name: Optional[str] = Field(None, description="Model name (e.g., llama3.2:3b)")
+    model: Optional[str] = Field(None, description="Model name (e.g., llama3.2:3b)")
+    temperature: Optional[float] = Field(None, ge=0.0, le=2.0, description="Sampling temperature")
+    max_tokens: Optional[int] = Field(None, ge=50, le=4096, description="Max generation tokens")
+    # Advanced options (optional)
     cpu_threads: Optional[int] = Field(None, ge=1, le=32, description="Number of CPU threads")
     gpu_layers: Optional[int] = Field(None, ge=-1, le=100, description="GPU layers (-1 = all)")
-    temperature: Optional[float] = Field(None, ge=0.0, le=2.0, description="Sampling temperature")
     context_length: Optional[int] = Field(None, ge=512, le=32768, description="Context window size")
-    max_tokens: Optional[int] = Field(None, ge=50, le=4096, description="Max generation tokens")
 
 
 class CharacterCreateRequest(BaseModel):

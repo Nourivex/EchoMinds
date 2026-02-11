@@ -40,12 +40,13 @@ async def get_model_config():
         ModelConfig with current settings
     """
     return ModelConfig(
-        model=settings.default_model,
+        provider=settings.llm_provider,
+        model_name=settings.default_model,
+        cpu_threads=settings.cpu_threads,
+        gpu_layers=settings.gpu_layers,
         temperature=settings.temperature,
-        max_tokens=settings.max_tokens,
-        top_p=settings.top_p,
-        top_k=settings.top_k,
-        llm_provider=settings.llm_provider
+        context_length=settings.context_length,
+        max_tokens=settings.max_tokens
     )
 
 
@@ -68,21 +69,25 @@ async def update_model_config(config: ModelConfigUpdate):
     if config.max_tokens is not None:
         settings.max_tokens = config.max_tokens
         
-    if config.top_p is not None:
-        settings.top_p = config.top_p
+    if config.cpu_threads is not None:
+        settings.cpu_threads = config.cpu_threads
         
-    if config.top_k is not None:
-        settings.top_k = config.top_k
+    if config.gpu_layers is not None:
+        settings.gpu_layers = config.gpu_layers
+        
+    if config.context_length is not None:
+        settings.context_length = config.context_length
     
     logger.info(f"Updated config: model={settings.default_model}, temp={settings.temperature}")
     
     return ModelConfig(
-        model=settings.default_model,
+        provider=settings.llm_provider,
+        model_name=settings.default_model,
+        cpu_threads=settings.cpu_threads,
+        gpu_layers=settings.gpu_layers,
         temperature=settings.temperature,
-        max_tokens=settings.max_tokens,
-        top_p=settings.top_p,
-        top_k=settings.top_k,
-        llm_provider=settings.llm_provider
+        context_length=settings.context_length,
+        max_tokens=settings.max_tokens
     )
 
 
