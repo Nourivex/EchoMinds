@@ -42,12 +42,20 @@ class ModelConfigUpdate(BaseModel):
 
 # ============ API Response Models ============
 
+class ContextMessage(BaseModel):
+    """Context message from RAG retrieval"""
+    content: str = Field(..., description="Message content")
+    role: ChatRole = Field(..., description="Message role")
+    timestamp: str = Field(..., description="Message timestamp (ISO 8601)")
+    relevance: float = Field(..., ge=0.0, le=1.0, description="Relevance score")
+
+
 class ChatResponse(BaseModel):
     """Chat API response"""
     reply: str = Field(..., description="AI-generated response")
     characterName: str = Field(..., description="Character name")
     conversationId: str = Field(..., description="Conversation ID")
-    context: List[str] = Field(default_factory=list, description="Retrieved context snippets")
+    context: List[ContextMessage] = Field(default_factory=list, description="Retrieved context messages")
     metadata: Dict[str, Any] = Field(
         default_factory=dict,
         description="Additional metadata (tokens, latency, etc.)"

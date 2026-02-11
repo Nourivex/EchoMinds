@@ -6,8 +6,10 @@ from chromadb.config import Settings as ChromaSettings
 from typing import List, Dict, Any, Optional
 import logging
 from sentence_transformers import SentenceTransformer
-from ..config.settings import settings
+from config.settings import settings
+from models.schemas import ConversationMessage, ChatRole
 import uuid
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 

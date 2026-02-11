@@ -6,8 +6,8 @@ import asyncio
 import ollama
 from typing import List, Dict, Any, Optional, AsyncIterator
 import logging
-from ..config.settings import settings
-from ..models.schemas import ChatRole
+from config.settings import settings
+from models.schemas import ChatRole
 
 logger = logging.getLogger(__name__)
 
@@ -22,10 +22,10 @@ class OllamaService:
     async def check_health(self) -> Dict[str, Any]:
         """Check Ollama server health"""
         try:
-            models = await self.client.list()
+            response = await self.client.list()
             return {
                 "status": "healthy",
-                "available_models": [m["name"] for m in models.get("models", [])],
+                "available_models": [m.model for m in response.models],
                 "current_model": self.current_model
             }
         except Exception as e:
@@ -117,8 +117,8 @@ class OllamaService:
         """Switch to different model"""
         try:
             # Check if model exists
-            models = await self.client.list()
-            available = [m["name"] for m in models.get("models", [])]
+            response = await self.client.list()
+            available = [m.model for m in response.models]
             
             if model_name not in available:
                 # Try to pull model

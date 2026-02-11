@@ -3,7 +3,7 @@ Configuration management untuk EchoMinds Backend
 Menggunakan Pydantic Settings untuk type-safe config
 """
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field
+from pydantic import Field, field_validator
 from typing import List
 import os
 from pathlib import Path
@@ -23,6 +23,22 @@ class Settings(BaseSettings):
         default=["http://localhost:5173"],
         env="CORS_ORIGINS"
     )
+    
+    @field_validator('cors_origins', mode='before')
+    @classmethod
+    def parse_cors_origins(cls, v):
+        """Parse CORS origins from comma-separated string or list."""
+        if isinstance(v, str):
+            return [origin.strip() for origin in v.split(',') if origin.strip()]
+        return v
+    
+    @field_validator('cors_origins', mode='before')
+    @classmethod
+    def parse_cors_origins(cls, v):
+        """Parse CORS origins from comma-separated string or list."""
+        if isinstance(v, str):
+            return [origin.strip() for origin in v.split(',') if origin.strip()]
+        return v
     
     # LLM Configuration
     llm_provider: str = Field(default="ollama", env="LLM_PROVIDER")  # ollama or llamacpp
