@@ -3,6 +3,7 @@
   import type { Message, Character } from '@models/chat';
   import ChatMessage from '@components/ui/ChatMessage.svelte';
   import InputBar from './InputBar.svelte';
+  import MessageActions from './MessageActions.svelte';
   import { sendMessage, APIError } from '@services/api';
 
   interface Props {
@@ -102,6 +103,51 @@
     }
   }
 
+  function handleDeleteMessage(messageId: string) {
+    messages = messages.filter(m => m.id !== messageId);
+  }
+
+  async function handleRegenerateResponse(messageId: string) {
+    // Find the message to regenerate
+    const messageIndex = messages.findIndex(m => m.id === messageId);
+    if (messageIndex === -1 || messageIndex === 0) return;
+    
+    // Get the user message before this assistant message
+    const userMessage = messages[messageIndex - 1];
+    if (!userMessage || userMessage.role !== 'user') return;
+    
+    // Remove the old assistant message
+    messages = messages.slice(0, messageIndex);
+    
+    // Regenerate
+    isAssistantTyping = true;
+    
+    try {
+      const response = await sendMessage(
+        userMessage.content,
+        'lycus',
+        character!.id,
+        conversationId
+      );
+      
+      const newAssistantMessage: Message = {
+        id: response.conversationId + '_' + Date.now(),
+        content: response.reply,
+        role: 'assistant',
+        timestamp: new Date()
+      };
+      
+      messages = [...messages, newAssistantMessage];
+      setTimeout(() => scrollToBottom(), 50);
+    } catch (error) {
+      console.error('Failed to regenerate:', error);
+      errorMessage = 'Failed to regenerate response';
+      setTimeout(() => errorMessage = null, 3000);
+    } finally {
+      isAssistantTyping = false;
+    }
+  }
+
   onMount(() => {
     scrollToBottom(false);
   });
@@ -166,7 +212,7 @@
       {#each messages as message (message.id)}
         {#if message.role === 'assistant'}
           <!-- AI Message dengan Avatar (Candy.AI Style) -->
-          <div class="flex gap-3 items-start animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div class="flex gap-3 items-start animate-in fade-in slide-in-from-bottom-2 duration-300 group">
             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 p-0.5 shadow-md flex-shrink-0">
               <div class="w-full h-full rounded-full bg-white dark:bg-slate-800 flex items-center justify-center text-xl">
                 {character?.avatar || '🤖'}
@@ -185,24 +231,43 @@
                   <p class="text-[15px] leading-relaxed text-slate-800 dark:text-slate-100 whitespace-pre-wrap break-words">
                     {message.content}
                   </p>
-                  <span class="text-xs text-slate-400 dark:text-slate-500 mt-1.5 block">
-                    {message.timestamp.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
-                  </span>
+                  <div class="flex items-center justify-between gap-2 mt-2">
+                    <span class="text-xs text-slate-400 dark:text-slate-500" title={message.timestamp.toLocaleString('id-ID')}>
+                      {message.timestamp.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                    <MessageActions
+                      messageId={message.id}
+                      content={message.content}
+                      isAssistant={true}
+                      onRegenerate={() => handleRegenerateResponse(message.id)}
+                      onDelete={() => handleDeleteMessage(message.id)}
+                    />
+                  </div>
                 {/if}
               </div>
             </div>
           </div>
         {:else}
           <!-- User Message -->
-          <div class="flex justify-end animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <div class="flex justify-end animate-in fade-in slide-in-from-bottom-2 duration-300 group">
             <div class="max-w-[85%] sm:max-w-[75%]">
               <div class="bg-gradient-to-br from-purple-600 to-blue-600 text-white rounded-2xl rounded-br-sm px-4 py-3 shadow-md">
                 <p class="text-[15px] leading-relaxed whitespace-pre-wrap break-words">
                   {message.content}
                 </p>
-                <span class="text-xs text-purple-100 mt-1.5 block text-right">
-                  {message.timestamp.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
-                </span>
+                <div class="flex items-center justify-between gap-2 mt-2">
+                  <span class="text-xs text-purple-100" title={message.timestamp.toLocaleString('id-ID')}>
+                    {message.timestamp.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                  <div class="opacity-80">
+                    <MessageActions
+                      messageId={message.id}
+                      content={message.content}
+                      isAssistant={false}
+                      onDelete={() => handleDeleteMessage(message.id)}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
