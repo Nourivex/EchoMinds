@@ -213,13 +213,19 @@ class ChatService:
         messages = [
             {"role": "system", "content": system_prompt}
         ]
-        
-        # Add conversation history
+       
+        # Add conversation history (handle both dict and object types)
         for msg in history:
-            messages.append({
-                "role": msg.role,
-                "content": msg.content
-            })
+            if isinstance(msg, dict):
+                messages.append({
+                    "role": msg.get("role", "user"),
+                    "content": msg.get("content", "")
+                })
+            else:
+                messages.append({
+                    "role": msg.role,
+                    "content": msg.content
+                })
         
         # Add current user message
         messages.append({
