@@ -1,9 +1,14 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { Message, Character } from '@models/chat';
+  import type { Character } from '@models/chat';
+  import type { Message } from '@lib/types/message';
   import ChatMessage from '@components/ui/ChatMessage.svelte';
   import InputBar from './InputBar.svelte';
   import MessageActions from './MessageActions.svelte';
+  import ActionPart from './message-parts/ActionPart.svelte';
+  import DialoguePart from './message-parts/DialoguePart.svelte';
+  import ThoughtPart from './message-parts/ThoughtPart.svelte';
+  import TranslationToggle from './message-parts/TranslationToggle.svelte';
   import { sendMessage, APIError } from '@services/api';
 
   interface Props {
@@ -66,12 +71,13 @@
         conversationId = response.conversationId;
       }
 
-      // Add assistant response
+      // Add assistant response with structured content
       const assistantMessage: Message = {
         id: response.conversationId + '_' + Date.now(),
         content: response.reply,
         role: 'assistant',
-        timestamp: new Date()
+        timestamp: new Date(),
+        structured: response.structured  // Include structured content
       };
 
       messages = [...messages, assistantMessage];
@@ -228,9 +234,31 @@
                     <span class="w-2 h-2 bg-slate-400 dark:bg-slate-500 rounded-full animate-bounce" style="animation-delay: 300ms;"></span>
                   </div>
                 {:else}
-                  <p class="text-[15px] leading-relaxed text-slate-800 dark:text-slate-100 whitespace-pre-wrap break-words">
-                    {message.content}
-                  </p>
+                  <!-- Render structured message if available -->
+                  {#if message.structured && (message.structured.dialogue || message.structured.action || message.structured.thought)}
+                    <div class="space-y-2">
+                      {#if message.structured.action}
+                        <ActionPart text={message.structured.action} />
+                      {/if}
+                      
+                      {#if message.structured.dialogue}
+                        <DialoguePart text={message.structured.dialogue} />
+                      {/if}
+                      
+                      {#if message.structured.thought}
+                        <ThoughtPart text={message.structured.thought} />
+                      {/if}
+                      
+                      <!-- Translation toggle -->
+                      <TranslationToggle structured={message.structured} />
+                    </div>
+                  {:else}
+                    <!-- Fallback to raw content -->
+                    <p class="text-[15px] leading-relaxed text-slate-800 dark:text-slate-100 whitespace-pre-wrap break-words">
+                      {message.content}
+                    </p>
+                  {/if}
+                  
                   <div class="flex items-center justify-between gap-2 mt-2">
                     <span class="text-xs text-slate-400 dark:text-slate-500" title={message.timestamp.toLocaleString('id-ID')}>
                       {message.timestamp.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
