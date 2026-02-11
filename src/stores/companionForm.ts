@@ -25,7 +25,7 @@ export interface CompanionFormData {
   // Communication Settings
   communication: {
     language: string;
-    style: string;
+    styles: string[]; // Changed from style to styles (multi-select max 3)
   };
   
   // Relationship Dynamics (7 layers)
@@ -57,7 +57,7 @@ const initialFormData: CompanionFormData = {
   },
   communication: {
     language: 'id',
-    style: 'friendly'
+    styles: ['friendly'] // Default with one style
   },
   relationship: {
     type: 'friend',
@@ -84,7 +84,7 @@ export const stepValidation = derived(companionForm, $form => ({
   
   1: $form.personality.traits.trim() !== '',
   
-  2: true, // Communication always valid (has defaults)
+  2: $form.communication.styles.length > 0, // At least 1 style selected
   
   3: $form.relationship.userName.trim() !== '' &&
      ($form.relationship.type !== 'custom' || $form.relationship.customType?.trim() !== '') &&
@@ -152,7 +152,7 @@ export function toAPIPayload(formData: CompanionFormData) {
     personality: formData.personality.traits,
     background: formData.personality.background,
     language: formData.communication.language,
-    conversationStyle: formData.communication.style,
+    conversationStyle: formData.communication.styles.join(', '), // Join multiple styles
     relationshipType: formData.relationship.type === 'custom' 
       ? formData.relationship.customType! 
       : formData.relationship.type,

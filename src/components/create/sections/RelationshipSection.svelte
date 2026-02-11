@@ -12,12 +12,38 @@
   ];
   
   const roleOptions = [
-    { id: 'kakak', label: 'Kakak', desc: 'Protective, responsible' },
-    { id: 'adik', label: 'Adik', desc: 'Playful, looks up' },
-    { id: 'senior', label: 'Senior', desc: 'Experienced' },
-    { id: 'junior', label: 'Junior', desc: 'Learning' },
-    { id: 'equal', label: 'Equal', desc: 'Balanced' },
-    { id: 'custom', label: 'Custom', desc: 'Your own' }
+    // Family
+    { id: 'orang-tua', label: 'Orang Tua', desc: 'Parent, protective', category: 'family' },
+    { id: 'anak', label: 'Anak', desc: 'Child, dependent', category: 'family' },
+    { id: 'kakak', label: 'Kakak', desc: 'Older sibling', category: 'family' },
+    { id: 'adik', label: 'Adik', desc: 'Younger sibling', category: 'family' },
+    { id: 'sepupu', label: 'Sepupu', desc: 'Cousin', category: 'family' },
+    
+    // Social
+    { id: 'sahabat', label: 'Sahabat', desc: 'Best friend', category: 'social' },
+    { id: 'teman', label: 'Teman', desc: 'Friend', category: 'social' },
+    { id: 'tetangga', label: 'Tetangga', desc: 'Neighbor', category: 'social' },
+    { id: 'kenalan', label: 'Kenalan', desc: 'Acquaintance', category: 'social' },
+    
+    // Academic/Professional
+    { id: 'guru', label: 'Guru', desc: 'Teacher', category: 'academic' },
+    { id: 'murid', label: 'Murid', desc: 'Student', category: 'academic' },
+    { id: 'mentor', label: 'Mentor', desc: 'Guide', category: 'academic' },
+    { id: 'mentee', label: 'Mentee', desc: 'Learner', category: 'academic' },
+    { id: 'senior', label: 'Senior', desc: 'Experienced', category: 'academic' },
+    { id: 'junior', label: 'Junior', desc: 'Learning', category: 'academic' },
+    { id: 'equal', label: 'Equal', desc: 'Balanced', category: 'academic' },
+    
+    // Romantic
+    { id: 'pacar', label: 'Pacar', desc: 'Boyfriend/Girlfriend', category: 'romantic' },
+    { id: 'tunangan', label: 'Tunangan', desc: 'Fiancé(e)', category: 'romantic' },
+    { id: 'suami-istri', label: 'Suami/Istri', desc: 'Spouse', category: 'romantic' },
+    { id: 'gebetan', label: 'Gebetan', desc: 'Crush', category: 'romantic' },
+    
+    // Other
+    { id: 'rival', label: 'Rival', desc: 'Competitor', category: 'other' },
+    { id: 'musuh', label: 'Musuh', desc: 'Enemy', category: 'other' },
+    { id: 'custom', label: 'Custom', desc: 'Your own', category: 'other' }
   ];
   
   const addressOptions = [
@@ -146,19 +172,19 @@
     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
       Social Role *
     </label>
-    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
       {#each roleOptions as role}
         <button
           type="button"
           onclick={() => updateRelationship({ role: role.id })}
-          class="flex flex-col gap-1 p-3 rounded-xl border-2 transition-all text-left {
+          class="flex flex-col gap-0.5 p-2 rounded-lg border-2 transition-all text-left {
             $companionForm.relationship.role === role.id
-              ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+              ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-md'
               : 'border-gray-200 dark:border-slate-700 hover:border-purple-300'
           }"
         >
-          <span class="text-sm font-semibold text-slate-900 dark:text-slate-100">{role.label}</span>
-          <span class="text-xs text-slate-500 dark:text-slate-400">{role.desc}</span>
+          <span class="text-xs font-bold text-slate-900 dark:text-slate-100">{role.label}</span>
+          <span class="text-xs text-slate-500 dark:text-slate-400 leading-tight">{role.desc}</span>
         </button>
       {/each}
     </div>
@@ -168,7 +194,7 @@
         type="text"
         value={$companionForm.relationship.customRole || ''}
         oninput={(e) => updateRelationship({ customRole: e.currentTarget.value })}
-        placeholder="e.g., Sepupu, Guru, Tetangga..."
+        placeholder="e.g., Bodyguard, Roommate, Pet..."
         class="w-full mt-3 px-4 py-3 bg-white dark:bg-slate-900 border border-purple-300 dark:border-purple-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-purple-500 outline-none"
       />
     {/if}
