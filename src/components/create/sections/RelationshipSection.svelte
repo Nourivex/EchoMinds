@@ -4,58 +4,193 @@
   import OptionCard from '../ui/OptionCard.svelte';
   
   const relationshipOptions = [
-    { id: 'friend', label: 'Friend', description: 'Supportive companion' },
-    { id: 'partner', label: 'Partner', description: 'Romantic connection' },
-    { id: 'mentor', label: 'Mentor', description: 'Wise guide' },
-    { id: 'rival', label: 'Rival', description: 'Competitive edge' },
-    { id: 'custom', label: 'Custom', description: 'Define your own' }
+    { id: 'romantic', label: 'Romantic', description: 'Love & intimacy', emoji: '💕' },
+    { id: 'platonic', label: 'Platonic', description: 'Non-romantic bond', emoji: '🤝' },
+    { id: 'familial', label: 'Familial', description: 'Family ties', emoji: '👨‍👩‍👧' },
+    { id: 'professional', label: 'Professional', description: 'Work/mentorship', emoji: '💼' },
+    { id: 'competitive', label: 'Competitive', description: 'Rivalry/conflict', emoji: '⚔️' },
+    { id: 'custom', label: 'Custom', description: 'Define your own', emoji: '✨' }
   ];
   
+  const roleGrouped = {
+    familial: [
+      { id: 'orang-tua', label: 'Orang Tua', desc: 'Parent', nature: ['familial', 'professional'] },
+      { id: 'kakak', label: 'Kakak', desc: 'Older sibling', nature: ['familial', 'platonic', 'competitive'] },
+      { id: 'adik', label: 'Adik', desc: 'Younger sibling', nature: ['familial', 'platonic'] },
+      { id: 'sepupu', label: 'Sepupu', desc: 'Cousin', nature: ['familial', 'platonic'] }
+    ],
+    romantic: [
+      { id: 'pacar', label: 'Pacar', desc: 'Boyfriend/Girlfriend', nature: ['romantic', 'platonic'] },
+      { id: 'tunangan', label: 'Tunangan', desc: 'Fiancé(e)', nature: ['romantic', 'platonic'] },
+      { id: 'suami-istri', label: 'Suami/Istri', desc: 'Spouse', nature: ['romantic', 'platonic', 'familial'] },
+      { id: 'gebetan', label: 'Gebetan', desc: 'Crush', nature: ['romantic', 'platonic', 'competitive'] }
+    ],
+    professional: [
+      { id: 'guru', label: 'Guru', desc: 'Teacher', nature: ['professional', 'platonic'] },
+      { id: 'murid', label: 'Murid', desc: 'Student', nature: ['professional', 'platonic'] },
+      { id: 'senior', label: 'Senior', desc: 'Experienced', nature: ['professional', 'platonic', 'competitive'] },
+      { id: 'junior', label: 'Junior', desc: 'Learning', nature: ['professional', 'platonic'] },
+      { id: 'bos', label: 'Bos', desc: 'Boss', nature: ['professional'] },
+      { id: 'rekan-kerja', label: 'Partner Kerja', desc: 'Coworker', nature: ['professional', 'platonic', 'competitive'] }
+    ],
+    competitive: [
+      { id: 'rival', label: 'Rival', desc: 'Competitor', nature: ['competitive', 'platonic'] },
+      { id: 'musuh', label: 'Musuh', desc: 'Enemy', nature: ['competitive'] }
+    ],
+    neutral: [
+      { id: 'teman', label: 'Teman', desc: 'Friend', nature: ['platonic'] },
+      { id: 'sahabat', label: 'Sahabat', desc: 'Best friend', nature: ['platonic'] },
+      { id: 'kenalan', label: 'Kenalan', desc: 'Acquaintance', nature: ['platonic'] },
+      { id: 'tetangga', label: 'Tetangga', desc: 'Neighbor', nature: ['platonic'] }
+    ]
+  };
+  
+  // Flatten for easy iteration
   const roleOptions = [
-    // Family
-    { id: 'orang-tua', label: 'Orang Tua', desc: 'Parent, protective', category: 'family', compatibleTypes: ['mentor', 'friend', 'custom'] },
-    { id: 'anak', label: 'Anak', desc: 'Child, dependent', category: 'family', compatibleTypes: ['friend', 'custom'] },
-    { id: 'kakak', label: 'Kakak', desc: 'Older sibling', category: 'family', compatibleTypes: ['friend', 'mentor', 'rival', 'custom'] },
-    { id: 'adik', label: 'Adik', desc: 'Younger sibling', category: 'family', compatibleTypes: ['friend', 'rival', 'custom'] },
-    { id: 'sepupu', label: 'Sepupu', desc: 'Cousin', category: 'family', compatibleTypes: ['friend', 'rival', 'custom'] },
-    
-    // Social
-    { id: 'sahabat', label: 'Sahabat', desc: 'Best friend', category: 'social', compatibleTypes: ['friend', 'custom'] },
-    { id: 'teman', label: 'Teman', desc: 'Friend', category: 'social', compatibleTypes: ['friend', 'rival', 'custom'] },
-    { id: 'tetangga', label: 'Tetangga', desc: 'Neighbor', category: 'social', compatibleTypes: ['friend', 'rival', 'custom'] },
-    { id: 'kenalan', label: 'Kenalan', desc: 'Acquaintance', category: 'social', compatibleTypes: ['friend', 'rival', 'custom'] },
-    
-    // Academic/Professional
-    { id: 'guru', label: 'Guru', desc: 'Teacher', category: 'academic', compatibleTypes: ['mentor', 'friend', 'custom'] },
-    { id: 'murid', label: 'Murid', desc: 'Student', category: 'academic', compatibleTypes: ['friend', 'custom'] },
-    { id: 'mentor', label: 'Mentor', desc: 'Guide', category: 'academic', compatibleTypes: ['mentor', 'friend', 'custom'] },
-    { id: 'mentee', label: 'Mentee', desc: 'Learner', category: 'academic', compatibleTypes: ['friend', 'custom'] },
-    { id: 'senior', label: 'Senior', desc: 'Experienced', category: 'academic', compatibleTypes: ['mentor', 'friend', 'rival', 'custom'] },
-    { id: 'junior', label: 'Junior', desc: 'Learning', category: 'academic', compatibleTypes: ['friend', 'custom'] },
-    { id: 'equal', label: 'Equal', desc: 'Balanced', category: 'academic', compatibleTypes: ['friend', 'rival', 'partner', 'custom'] },
-    
-    // Romantic
-    { id: 'pacar', label: 'Pacar', desc: 'Boyfriend/Girlfriend', category: 'romantic', compatibleTypes: ['partner', 'friend', 'custom'] },
-    { id: 'tunangan', label: 'Tunangan', desc: 'Fiancé(e)', category: 'romantic', compatibleTypes: ['partner', 'friend', 'custom'] },
-    { id: 'suami-istri', label: 'Suami/Istri', desc: 'Spouse', category: 'romantic', compatibleTypes: ['partner', 'friend', 'custom'] },
-    { id: 'gebetan', label: 'Gebetan', desc: 'Crush', category: 'romantic', compatibleTypes: ['friend', 'rival', 'partner', 'custom'] },
-    
-    // Other
-    { id: 'rival', label: 'Rival', desc: 'Competitor', category: 'other', compatibleTypes: ['rival', 'friend', 'custom'] },
-    { id: 'musuh', label: 'Musuh', desc: 'Enemy', category: 'other', compatibleTypes: ['rival', 'custom'] },
-    { id: 'custom', label: 'Custom', desc: 'Your own', category: 'other', compatibleTypes: ['friend', 'partner', 'mentor', 'rival', 'custom'] }
+    ...roleGrouped.familial,
+    ...roleGrouped.romantic,
+    ...roleGrouped.professional,
+    ...roleGrouped.competitive,
+    ...roleGrouped.neutral,
+    { id: 'custom', label: 'Custom', desc: 'Your own', nature: ['romantic', 'platonic', 'familial', 'professional', 'competitive', 'custom'], category: 'other' }
   ];
   
-  const addressOptions = [
-    { id: 'kamu', label: 'Kamu', context: 'Casual', suitableFor: ['teman', 'sahabat', 'equal', 'pacar', 'gebetan', 'sepupu', 'kenalan'] },
-    { id: 'mas', label: 'Mas', context: 'Respectful (M)', suitableFor: ['kakak', 'senior', 'guru', 'mentor', 'orang-tua', 'suami-istri', 'tetangga'] },
-    { id: 'mbak', label: 'Mbak', context: 'Respectful (F)', suitableFor: ['kakak', 'senior', 'guru', 'mentor', 'orang-tua', 'suami-istri', 'tetangga'] },
-    { id: 'kakak', label: 'Kakak', context: 'Older sibling', suitableFor: ['kakak', 'senior', 'mentor'] },
-    { id: 'adik', label: 'Adik', context: 'Younger', suitableFor: ['adik', 'junior', 'murid', 'anak'] },
-    { id: 'sayang', label: 'Sayang', context: 'Endearing', suitableFor: ['pacar', 'tunangan', 'suami-istri', 'anak', 'adik'] },
-    { id: 'pak', label: 'Pak', context: 'Formal (M)', suitableFor: ['guru', 'orang-tua', 'mentor'] },
-    { id: 'bu', label: 'Bu', context: 'Formal (F)', suitableFor: ['guru', 'orang-tua', 'mentor'] }
-  ];
+  export const addressOptions = [
+    // ===== Neutral / Casual =====
+    { 
+        id: 'kamu', 
+        label: 'Kamu', 
+        context: 'Casual neutral',
+        suitableFor: ['teman','sahabat','equal','pacar','gebetan','sepupu','kenalan','rekan-kerja']
+    },
+    { 
+        id: 'aku-kamu', 
+        label: 'Aku – Kamu', 
+        context: 'Soft casual',
+        suitableFor: ['teman','pacar','gebetan','sahabat']
+    },
+
+    // ===== Respectful Informal =====
+    { 
+        id: 'mas', 
+        label: 'Mas', 
+        context: 'Respectful male',
+        suitableFor: ['kakak','senior','guru','mentor','orang-tua','suami-istri','tetangga','bos']
+    },
+    { 
+        id: 'mbak', 
+        label: 'Mbak', 
+        context: 'Respectful female',
+        suitableFor: ['kakak','senior','guru','mentor','orang-tua','suami-istri','tetangga','bos']
+    },
+    { 
+        id: 'kak', 
+        label: 'Kak', 
+        context: 'Friendly respectful',
+        suitableFor: ['kakak','senior','mentor','teman']
+    },
+
+    // ===== Family =====
+    { 
+        id: 'kakak', 
+        label: 'Kakak', 
+        context: 'Older sibling',
+        suitableFor: ['kakak']
+    },
+    { 
+        id: 'adik', 
+        label: 'Adik', 
+        context: 'Younger sibling',
+        suitableFor: ['adik','junior','murid','anak']
+    },
+    { 
+        id: 'ayah', 
+        label: 'Ayah', 
+        context: 'Father figure',
+        suitableFor: ['orang-tua']
+    },
+    { 
+        id: 'ibu', 
+        label: 'Ibu', 
+        context: 'Mother figure',
+        suitableFor: ['orang-tua']
+    },
+
+    // ===== Romantic =====
+    { 
+        id: 'sayang', 
+        label: 'Sayang', 
+        context: 'Affectionate',
+        suitableFor: ['pacar','tunangan','suami-istri','gebetan']
+    },
+    { 
+        id: 'cinta', 
+        label: 'Cinta', 
+        context: 'Romantic intense',
+        suitableFor: ['pacar','tunangan','suami-istri']
+    },
+    { 
+        id: 'baby', 
+        label: 'Baby', 
+        context: 'Playful romantic',
+        suitableFor: ['pacar','tunangan']
+    },
+    { 
+        id: 'ayang', 
+        label: 'Ayang', 
+        context: 'Cute romantic',
+        suitableFor: ['pacar','gebetan']
+    },
+
+    // ===== Formal =====
+    { 
+        id: 'pak', 
+        label: 'Pak', 
+        context: 'Formal male',
+        suitableFor: ['guru','orang-tua','mentor','bos']
+    },
+    { 
+        id: 'bu', 
+        label: 'Bu', 
+        context: 'Formal female',
+        suitableFor: ['guru','orang-tua','mentor','bos']
+    },
+    { 
+        id: 'anda', 
+        label: 'Anda', 
+        context: 'Very formal neutral',
+        suitableFor: ['professional','bos','rekan-kerja']
+    },
+
+    // ===== Playful / Teasing =====
+    { 
+        id: 'bos', 
+        label: 'Bos', 
+        context: 'Playful respect',
+        suitableFor: ['teman','rekan-kerja','senior']
+    },
+    { 
+        id: 'jagoan', 
+        label: 'Jagoan', 
+        context: 'Encouraging playful',
+        suitableFor: ['teman','anak','adik']
+    },
+
+    // ===== Dominant / Roleplay nuance =====
+    { 
+        id: 'tuan', 
+        label: 'Tuan', 
+        context: 'Dominant formal male',
+        suitableFor: ['mentor','bos','suami-istri']
+    },
+    { 
+        id: 'nyonya', 
+        label: 'Nyonya', 
+        context: 'Dominant formal female',
+        suitableFor: ['mentor','bos','suami-istri']
+    }
+    ];
+
   
   const ageOptions = [
     { id: 'older', label: 'Older', desc: 'More experienced' },
@@ -76,48 +211,59 @@
     { id: 'mysterious', label: 'Mysterious', emoji: '🌙' }
   ];
 
-  // Smart label suggestions based on type + role
+  // Smart label suggestions based on type + role (MORE DIVERSE!)
   const labelSuggestions = $derived.by(() => {
     const type = $companionForm.relationship.type;
     const role = $companionForm.relationship.role;
     const userName = $companionForm.relationship.userName;
     
-    const map: Record<string, Record<string, string>> = {
-      'friend': {
-        'sahabat': `sahabat terbaik ${userName}`,
-        'teman': `teman dekat ${userName}`,
-        'kakak': `kakak yang supportive`,
-        'adik': `adik yang ceria`,
-        'sepupu': `sepupu kesayangan`,
-        'default': `teman ${userName}`
+    const suggestions: Record<string, Record<string, string[]>> = {
+      'romantic': {
+        'pacar': [`kekasih ${userName}`, `pacar tersayang ${userName}`, `cinta pertama ${userName}`, `belahan jiwa ${userName}`],
+        'tunangan': [`calon suami/istri ${userName}`, `tunangan ${userName}`, `pasangan masa depan ${userName}`],
+        'suami-istri': [`pasangan hidup ${userName}`, `belahan jiwa ${userName}`, `pendamping setia ${userName}`],
+        'gebetan': [`gebetan ${userName}`, `orang yang disukai ${userName}`, `crush rahasia ${userName}`],
+        'default': [`cinta ${userName}`, `yang tersayang`, `romantic partner ${userName}`]
       },
-      'partner': {
-        'pacar': `kekasih ${userName}`,
-        'tunangan': `calon suami/istri ${userName}`,
-        'suami-istri': `pasangan hidup ${userName}`,
-        'gebetan': `gebetan ${userName}`,
-        'equal': `partner hidup ${userName}`,
-        'default': `partner ${userName}`
+      'platonic': {
+        'sahabat': [`sahabat terbaik ${userName}`, `bestie sejak lama`, `partner in crime ${userName}`, `sahabat jiwa`],
+        'teman': [`teman dekat ${userName}`, `kawan setia`, `teman seperjuangan`, `buddy ${userName}`],
+        'kakak': [`kakak yang supportive`, `kakak kesayangan`, `kakak figure`, `big sibling energy`],
+        'adik': [`adik yang ceria`, `adik kesayangan`, `little one`, `adik manja`],
+        'sepupu': [`sepupu kesayangan`, `sepupu favorit`, `cousin vibes`, `family friend`],
+        'kenalan': [`kenalan ${userName}`, `familiar stranger`, `acquaintance ${userName}`],
+        'tetangga': [`tetangga baik hati`, `neighbor ${userName}`, `tetangga sebelah`],
+        'default': [`teman ${userName}`, `companion`, `platonic partner`]
       },
-      'mentor': {
-        'orang-tua': `orang tua ${userName}`,
-        'guru': `guru ${userName}`,
-        'mentor': `mentor ${userName}`,
-        'kakak': `kakak pembimbing`,
-        'senior': `senior yang mengayomi`,
-        'default': `mentor ${userName}`
+      'familial': {
+        'orang-tua': [`orang tua ${userName}`, `figur ayah/ibu`, `parent figure`, `orangtua substitusi`],
+        'kakak': [`kakak kandung`, `sibling kesayangan`, `protective older sibling`, `kakak sepupu`],
+        'adik': [`adik kandung`, `little sibling`, `adik kesayangan`, `youngest one`],
+        'sepupu': [`sepupu keluarga ${userName}`, `distant cousin`, `family member`, `keluarga dekat`],
+        'default': [`keluarga ${userName}`, `family member`, `blood relation`]
       },
-      'rival': {
-        'rival': `rival utama ${userName}`,
-        'musuh': `musuh bebuyutan ${userName}`,
-        'teman': `teman sekaligus rival`,
-        'kakak': `kakak yang kompetitif`,
-        'default': `rival ${userName}`
+      'professional': {
+        'guru': [`guru ${userName}`, `mentor akademik`, `teacher figure`, `pembimbing ${userName}`],
+        'murid': [`murid ${userName}`, `student`, `anak didik`, `learner ${userName}`],
+        'senior': [`senior yang mengayomi`, `experienced guide`, `workplace mentor`, `senior respected`],
+        'junior': [`junior ${userName}`, `fresh learner`, `trainee`, `mentee ${userName}`],
+        'bos': [`bos ${userName}`, `superior`, `leader figure`, `atasan langsung`],
+        'rekan-kerja': [`partner kerja ${userName}`, `colleague`, `coworker vibes`, `work buddy`],
+        'default': [`professional connection`, `workplace relation`, `work partner`]
+      },
+      'competitive': {
+        'rival': [`rival utama ${userName}`, `nemesis`, `worthy opponent`, `kompetitor sejati`, `friendly rival`],
+        'musuh': [`musuh bebuyutan ${userName}`, `arch-enemy`, `antagonist`, `sworn enemy`, `oposisi ${userName}`],
+        'teman': [`teman sekaligus rival`, `frenemy`, `competitive friend`, `rival yang hormat`],
+        'default': [`kompetitor ${userName}`, `rival`, `adversary`]
       }
     };
     
-    const typeMap = map[type] || map['friend'];
-    return typeMap[role] || typeMap['default'] || '';
+    const natureMap = suggestions[type] || suggestions['platonic'];
+    const options = natureMap[role] || natureMap['default'] || [``];
+    
+    // Return random suggestion untuk variety
+    return options[Math.floor(Math.random() * options.length)];
   });
 
   // Smart address suggestions
@@ -126,15 +272,15 @@
     return addressOptions.filter(addr => addr.suitableFor.includes(role));
   });
 
-  // Check if type-role combination is compatible
+  // Check if type-role combination is compatible (updated logic)
   const isCompatibleCombination = $derived.by(() => {
     const type = $companionForm.relationship.type;
     const role = $companionForm.relationship.role;
     
     const roleData = roleOptions.find(r => r.id === role);
-    if (!roleData) return true; // Custom always compatible
+    if (!roleData || !roleData.nature) return true; // Custom always compatible
     
-    return roleData.compatibleTypes.includes(type);
+    return roleData.nature.includes(type);
   });
 
   // Auto-update label when type or role changes
@@ -233,24 +379,27 @@
     </div>
   </div>
 
-  <!-- Relationship Type -->
+  <!-- Relationship Nature -->
   <div>
     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
-      Relationship Type *
+      Relationship Nature *
     </label>
-    <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
       {#each relationshipOptions as rel}
         <button
           type="button"
           onclick={() => updateRelationship({ type: rel.id })}
-          class="flex flex-col gap-1 p-3 rounded-xl border-2 transition-all text-left {
+          class="flex items-center gap-2 p-3 rounded-xl border-2 transition-all {
             $companionForm.relationship.type === rel.id
               ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-md'
               : 'border-gray-200 dark:border-slate-700 hover:border-purple-300'
           }"
         >
-          <span class="text-sm font-semibold text-slate-900 dark:text-slate-100">{rel.label}</span>
-          <span class="text-xs text-slate-500 dark:text-slate-400">{rel.description}</span>
+          <span class="text-2xl">{rel.emoji}</span>
+          <div class="flex-1">
+            <div class="text-sm font-bold text-slate-900 dark:text-slate-100">{rel.label}</div>
+            <div class="text-xs text-slate-500 dark:text-slate-400">{rel.description}</div>
+          </div>
         </button>
       {/each}
     </div>
@@ -266,26 +415,133 @@
     {/if}
   </div>
 
-  <!-- Relationship Role -->
+  <!-- Social Role (Grouped) -->
   <div>
     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
       Social Role *
     </label>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-      {#each roleOptions as role}
+    
+    <div class="space-y-4">
+      <!-- Familial -->
+      <div>
+        <h4 class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-2">👨‍👩‍👧 Familial</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {#each roleGrouped.familial as role}
+            <button
+              type="button"
+              onclick={() => updateRelationship({ role: role.id })}
+              class="flex flex-col gap-0.5 p-2 rounded-lg border-2 transition-all text-center {
+                $companionForm.relationship.role === role.id
+                  ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-md'
+                  : 'border-gray-200 dark:border-slate-700 hover:border-purple-300'
+              }"
+            >
+              <span class="text-xs font-bold text-slate-900 dark:text-slate-100">{role.label}</span>
+              <span class="text-xs text-slate-500 dark:text-slate-400 leading-tight">{role.desc}</span>
+            </button>
+          {/each}
+        </div>
+      </div>
+
+      <!-- Romantic -->
+      <div>
+        <h4 class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-2">💕 Romantic</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {#each roleGrouped.romantic as role}
+            <button
+              type="button"
+              onclick={() => updateRelationship({ role: role.id })}
+              class="flex flex-col gap-0.5 p-2 rounded-lg border-2 transition-all text-center {
+                $companionForm.relationship.role === role.id
+                  ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-md'
+                  : 'border-gray-200 dark:border-slate-700 hover:border-purple-300'
+              }"
+            >
+              <span class="text-xs font-bold text-slate-900 dark:text-slate-100">{role.label}</span>
+              <span class="text-xs text-slate-500 dark:text-slate-400 leading-tight">{role.desc}</span>
+            </button>
+          {/each}
+        </div>
+      </div>
+
+      <!-- Professional -->
+      <div>
+        <h4 class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-2">💼 Professional</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {#each roleGrouped.professional as role}
+            <button
+              type="button"
+              onclick={() => updateRelationship({ role: role.id })}
+              class="flex flex-col gap-0.5 p-2 rounded-lg border-2 transition-all text-center {
+                $companionForm.relationship.role === role.id
+                  ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-md'
+                  : 'border-gray-200 dark:border-slate-700 hover:border-purple-300'
+              }"
+            >
+              <span class="text-xs font-bold text-slate-900 dark:text-slate-100">{role.label}</span>
+              <span class="text-xs text-slate-500 dark:text-slate-400 leading-tight">{role.desc}</span>
+            </button>
+          {/each}
+        </div>
+      </div>
+
+      <!-- Competitive -->
+      <div>
+        <h4 class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-2">⚔️ Competitive</h4>
+        <div class="grid grid-cols-2 gap-2">
+          {#each roleGrouped.competitive as role}
+            <button
+              type="button"
+              onclick={() => updateRelationship({ role: role.id })}
+              class="flex flex-col gap-0.5 p-2 rounded-lg border-2 transition-all text-center {
+                $companionForm.relationship.role === role.id
+                  ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-md'
+                  : 'border-gray-200 dark:border-slate-700 hover:border-purple-300'
+              }"
+            >
+              <span class="text-xs font-bold text-slate-900 dark:text-slate-100">{role.label}</span>
+              <span class="text-xs text-slate-500 dark:text-slate-400 leading-tight">{role.desc}</span>
+            </button>
+          {/each}
+        </div>
+      </div>
+
+      <!-- Neutral -->
+      <div>
+        <h4 class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-2">🤝 Neutral</h4>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {#each roleGrouped.neutral as role}
+            <button
+              type="button"
+              onclick={() => updateRelationship({ role: role.id })}
+              class="flex flex-col gap-0.5 p-2 rounded-lg border-2 transition-all text-center {
+                $companionForm.relationship.role === role.id
+                  ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-md'
+                  : 'border-gray-200 dark:border-slate-700 hover:border-purple-300'
+              }"
+            >
+              <span class="text-xs font-bold text-slate-900 dark:text-slate-100">{role.label}</span>
+              <span class="text-xs text-slate-500 dark:text-slate-400 leading-tight">{role.desc}</span>
+            </button>
+          {/each}
+        </div>
+      </div>
+
+      <!--Custom -->
+      <div>
         <button
           type="button"
-          onclick={() => updateRelationship({ role: role.id })}
-          class="flex flex-col gap-0.5 p-2 rounded-lg border-2 transition-all text-left {
-            $companionForm.relationship.role === role.id
+          onclick={() => updateRelationship({ role: 'custom' })}
+          class="w-full sm:w-auto flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all {
+            $companionForm.relationship.role === 'custom'
               ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-md'
               : 'border-gray-200 dark:border-slate-700 hover:border-purple-300'
           }"
         >
-          <span class="text-xs font-bold text-slate-900 dark:text-slate-100">{role.label}</span>
-          <span class="text-xs text-slate-500 dark:text-slate-400 leading-tight">{role.desc}</span>
+          <span class="text-sm">✨</span>
+          <span class="text-xs font-bold text-slate-900 dark:text-slate-100">Custom Role</span>
         </button>
-      {/each}
+      </div>
     </div>
     
     {#if $companionForm.relationship.role === 'custom'}
