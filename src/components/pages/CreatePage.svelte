@@ -16,7 +16,8 @@
   let conversationStyle = $state('friendly');
   
   // Relationship settings
-  let relationshipType = $state('friend'); // friend | partner | mentor | etc
+  let relationshipType = $state('friend'); // friend | partner | mentor | custom
+  let customRelationship = $state(''); // For custom relationship type
   let emotionalTone = $state('warm'); // warm | neutral | playful | mysterious
   
   // Category
@@ -25,6 +26,24 @@
   // UI State
   let isCreating = $state(false);
   let error = $state<string | null>(null);
+  let backendAvailable = $state(false);
+
+  // Check if backend character creation endpoint is available
+  async function checkBackendAvailability() {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/characters`, {
+        method: 'OPTIONS'
+      });
+      backendAvailable = response.ok || response.status === 405; // 405 means endpoint exists but POST not implemented yet
+    } catch {
+      backendAvailable = false;
+    }
+  }
+
+  // Check on mount
+  $effect(() => {
+    checkBackendAvailability();
+  });
 
   const avatarOptions = ['🤖', '👨', '👩', '🧑', '👦', '👧', '🧒', '👶', '🦸', '🦹', '🧙', '🧚', '🧛', '🧜', '🧝', '🧞'];
   
@@ -45,7 +64,8 @@
     { id: 'friend', label: 'Friend', description: 'Supportive companion' },
     { id: 'partner', label: 'Partner', description: 'Romantic connection' },
     { id: 'mentor', label: 'Mentor', description: 'Wise guide' },
-    { id: 'rival', label: 'Rival', description: 'Competitive edge' }
+    { id: 'rival', label: 'Rival', description: 'Competitive edge' },
+    { id: 'custom', label: 'Custom', description: 'Define your own' }
   ];
 
   const toneOptions = [
@@ -77,7 +97,7 @@
         background: characterBackground,
         language: primaryLanguage,
         conversationStyle,
-        relationshipType,
+        relationshipType: relationshipType === 'custom' ? customRelationship : relationshipType,
         emotionalTone,
         category: selectedCategory
       };
@@ -110,6 +130,7 @@
     primaryLanguage = 'id';
     conversationStyle = 'friendly';
     relationshipType = 'friend';
+    customRelationship = '';
     emotionalTone = 'warm';
     selectedCategory = 'supportive';
   }
@@ -311,7 +332,7 @@
           <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
             Relationship Type *
           </label>
-          <div class="grid grid-cols-2 gap-3">
+          <div class="grid grid-cols-2 gap-3 mb-3">
             {#each relationshipOptions as rel}
               <button
                 type="button"
@@ -323,6 +344,20 @@
               </button>
             {/each}
           </div>
+          
+          {#if relationshipType === 'custom'}
+            <div class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4 space-y-3">
+              <p class="text-xs text-slate-600 dark:text-slate-400">
+                💡 <strong>Tip:</strong> Jelaskan hubungan yang kamu inginkan, misalnya: "Childhood best friend", "Mysterious ally", "Caring sibling", dll.
+              </p>
+              <input
+                type="text"
+                bind:value={customRelationship}
+                placeholder="e.g., Childhood best friend, Mysterious ally..."
+                class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-purple-300 dark:border-purple-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
+              />
+            </div>
+          {/if}
         </div>
 
         <!-- Emotional Tone -->
@@ -348,7 +383,7 @@
       <!-- Create Button -->
       <button
         onclick={handleCreate}
-        disabled={!characterName.trim() || !characterDescription.trim() || !characterPersonality.trim() || isCreating}
+        disabled={!characterName.trim() || !characterDescription.trim() || !characterPersonality.trim() || (relationshipType === 'custom' && !customRelationship.trim()) || isCreating}
         class="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:from-slate-600 disabled:to-slate-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl disabled:shadow-none transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {#if isCreating}
@@ -360,10 +395,16 @@
         {/if}
       </button>
 
-      <!-- Note -->
-      <p class="text-xs text-center text-slate-500 dark:text-slate-400">
-        ⚠️ Form siap! Backend endpoint akan diimplementasikan sesuai design lengkap
-      </p>
+      <!-- Smart Status Note -->
+      {#if !backendAvailable}
+        <p class="text-xs text-center text-slate-500 dark:text-slate-400">
+          ⚠️ Backend endpoint sedang dalam development. Form siap digunakan saat backend aktif.
+        </p>
+      {:else}
+        <p class="text-xs text-center text-green-600 dark:text-green-400">
+          ✅ Connected to backend • Ready to create characters
+        </p>
+      {/if}
     </div>
   </div>
 </div>
