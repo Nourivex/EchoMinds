@@ -11,6 +11,7 @@
   let backendModel = $state<string>('');
   let backendTemperature = $state<number>(0.7);
   let availableModels = $state<string[]>([]);
+  let systemStatus = $state<any>(null);
   let loadingConfig = $state(true);
   let configError = $state<string | null>(null);
 
@@ -18,20 +19,33 @@
     currentTheme = value;
   });
 
-  // Load backend config
+  // Load backend config and system status
   async function loadBackendConfig() {
     try {
       loadingConfig = true;
       configError = null;
       
-      const [config, models] = await Promise.all([
-        getModelConfig(),
-        listModels()
+      // Fetch config, models, and system status
+      const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      
+      const [configRes, modelsRes, statusRes] = await Promise.all([
+        fetch(`${apiBase}/api/config`),
+        fetch(`${apiBase}/api/models`),
+        fetch(`${apiBase}/api/status`)
       ]);
       
-      backendModel = config.model_name;
-      backendTemperature = config.temperature;
-      availableModels = models;
+      if (!configRes.ok || !modelsRes.ok || !statusRes.ok) {
+        throw new Error('Backend tidak tersedia');
+      }
+      
+      const config = await configRes.json();
+      const models = await modelsRes.json();
+      const status = await statusRes.json();
+      
+      backendModel = config.model || 'Unknown';
+      backendTemperature = config.temperature || 0.7;
+      availableModels = models || [];
+      systemStatus = status;
     } catch (err) {
       configError = err instanceof Error ? err.message : 'Gagal memuat konfigurasi';
       console.error('Failed to load backend config:', err);

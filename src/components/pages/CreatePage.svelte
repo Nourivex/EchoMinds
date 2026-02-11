@@ -18,8 +18,19 @@
   
   // Relationship settings
   let relationshipType = $state('friend'); // friend | partner | mentor | custom
+  let relationshipRole = $state('equal'); // kakak | adik | senior | junior | equal | custom
+  let customRole = $state(''); // For custom role
+  let relationshipLabel = $state(''); // Custom label (e.g., "kakak angkat", "teman masa kecil")
   let customRelationship = $state(''); // For custom relationship type
   let emotionalTone = $state('warm'); // warm | neutral | playful | mysterious
+  
+  // User identity awareness (CRITICAL for relationship context)
+  let userName = $state(''); // How character addresses user (e.g., "Lycus", "Kak Lycus")
+  let preferredAddress = $state('kamu'); // kamu | mas | mbak | sayang | kakak | adik
+  
+  // Relative positioning
+  let ageRelation = $state('same'); // older | younger | same
+  let authorityLevel = $state('equal'); // higher | equal | lower
   
   // Category
   let selectedCategory = $state('supportive');
@@ -69,6 +80,36 @@
     { id: 'rival', label: 'Rival', description: 'Competitive edge' },
     { id: 'custom', label: 'Custom', description: 'Define your own' }
   ];
+  
+  const roleOptions = [
+    { id: 'kakak', label: 'Kakak (Older Sibling)', desc: 'Protective, responsible' },
+    { id: 'adik', label: 'Adik (Younger Sibling)', desc: 'Playful, looks up to you' },
+    { id: 'senior', label: 'Senior', desc: 'Experienced, mentoring' },
+    { id: 'junior', label: 'Junior', desc: 'Learning, respectful' },
+    { id: 'equal', label: 'Equal', desc: 'Same level, balanced' },
+    { id: 'custom', label: 'Custom', desc: 'Your own dynamic' }
+  ];
+  
+  const addressOptions = [
+    { id: 'kamu', label: 'Kamu', context: 'Casual, equal' },
+    { id: 'mas', label: 'Mas', context: 'Respectful (male)' },
+    { id: 'mbak', label: 'Mbak', context: 'Respectful (female)' },
+    { id: 'kakak', label: 'Kakak', context: 'Older sibling' },
+    { id: 'adik', label: 'Adik', context: 'Younger sibling' },
+    { id: 'sayang', label: 'Sayang', context: 'Endearing/romantic' }
+  ];
+  
+  const ageOptions = [
+    { id: 'older', label: 'Older', desc: 'More experienced, mature' },
+    { id: 'younger', label: 'Younger', desc: 'Youthful, energetic' },
+    { id: 'same', label: 'Same Age', desc: 'Equal generation' }
+  ];
+  
+  const authorityOptions = [
+    { id: 'higher', label: 'Higher', desc: 'Commands respect, guides you' },
+    { id: 'equal', label: 'Equal', desc: 'Balanced, mutual respect' },
+    { id: 'lower', label: 'Lower', desc: 'Looks up to you, seeks advice' }
+  ];
 
   const toneOptions = [
     { id: 'warm', label: 'Warm', emoji: '💖' },
@@ -91,7 +132,7 @@
       error = null;
       successMessage = null;
 
-      // Construct character payload
+      // Construct character payload with all advanced fields
       const characterData = {
         name: characterName,
         avatar: characterAvatar,
@@ -101,6 +142,12 @@
         language: primaryLanguage,
         conversationStyle,
         relationshipType: relationshipType === 'custom' ? customRelationship : relationshipType,
+        relationshipRole: relationshipRole === 'custom' ? customRole : relationshipRole,
+        relationshipLabel,
+        userName: userName || characterName, // Fallback to characterName
+        preferredAddress,
+        ageRelation,
+        authorityLevel,
         emotionalTone,
         category: selectedCategory
       };
@@ -137,7 +184,14 @@
     primaryLanguage = 'id';
     conversationStyle = 'friendly';
     relationshipType = 'friend';
+    relationshipRole = 'equal';
+    customRole = '';
+    relationshipLabel = '';
     customRelationship = '';
+    userName = '';
+    preferredAddress = 'kamu';
+    ageRelation = 'same';
+    authorityLevel = 'equal';
     emotionalTone = 'warm';
     selectedCategory = 'supportive';
   }
@@ -375,6 +429,136 @@
           {/if}
         </div>
 
+        <!-- User Identity (NEW - Critical for context) -->
+        <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/10 dark:to-purple-900/10 border border-blue-200 dark:border-blue-800 rounded-xl p-5 space-y-4">
+          <div class="flex items-start gap-3">
+            <span class="text-2xl">👤</span>
+            <div class="flex-1">
+              <h4 class="text-sm font-bold text-slate-900 dark:text-slate-100 mb-1">User Identity Awareness</h4>
+              <p class="text-xs text-slate-600 dark:text-slate-400 mb-4">
+                Biar character tahu siapa kamu baginya — ini <strong>penting banget</strong> supaya percakapan lebih personal!
+              </p>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- User Name -->
+                <div>
+                  <label for="userName" class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                    Nama Kamu (Untuk Character) *
+                  </label>
+                  <input
+                    type="text"
+                    id="userName"
+                    bind:value={userName}
+                    placeholder="e.g., Lycus, Kak Budi, Sarah"
+                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  />
+                </div>
+                
+                <!-- Preferred Address -->
+                <div>
+                  <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                    Cara Panggil Kamu *
+                  </label>
+                  <select
+                    bind:value={preferredAddress}
+                    class="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-700 rounded-lg text-sm text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                  >
+                    {#each addressOptions as addr}
+                      <option value={addr.id}>{addr.label} ({addr.context})</option>
+                    {/each}
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Relationship Role (NEW) -->
+        <div>
+          <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+            Social Role (Hubungan Sosial) *
+          </label>
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            {#each roleOptions as role}
+              <button
+                type="button"
+                onclick={() => relationshipRole = role.id}
+                class="flex flex-col gap-1 p-3 rounded-xl border-2 transition-all text-left {relationshipRole === role.id ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20' : 'border-gray-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-600'}"
+              >
+                <span class="text-sm font-semibold text-slate-900 dark:text-slate-100">{role.label}</span>
+                <span class="text-xs text-slate-500 dark:text-slate-400">{role.desc}</span>
+              </button>
+            {/each}
+          </div>
+          
+          {#if relationshipRole === 'custom'}
+            <input
+              type="text"
+              bind:value={customRole}
+              placeholder="e.g., Sepupu, Guru privat, Tetangga dekat..."
+              class="w-full px-4 py-3 bg-white dark:bg-slate-900 border border-purple-300 dark:border-purple-700 rounded-lg text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
+            />
+          {/if}
+        </div>
+
+        <!-- Relationship Label (NEW - Optional) -->
+        <div>
+          <label for="relationshipLabel" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+            Relationship Label <span class="text-xs text-slate-500">(Opsional)</span>
+          </label>
+          <input
+            type="text"
+            id="relationshipLabel"
+            bind:value={relationshipLabel}
+            placeholder="e.g., 'adik kandung', 'sahabat sejak kecil', 'mantan kekasih'"
+            class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
+          />
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Nama spesifik untuk hubungan kalian (misal: "adik kandung" bukan cuma "adik")
+          </p>
+        </div>
+
+        <!-- Age & Authority (NEW - Side by side) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Age Relation -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+              Age Relation *
+            </label>
+            <div class="space-y-2">
+              {#each ageOptions as age}
+                <button
+                  type="button"
+                  onclick={() => ageRelation = age.id}
+                  class="w-full flex flex-col gap-1 p-3 rounded-lg border-2 transition-all text-left {ageRelation === age.id ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20' : 'border-gray-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-600'}"
+                >
+                  <span class="text-sm font-semibold text-slate-900 dark:text-slate-100">{age.label}</span>
+                  <span class="text-xs text-slate-500 dark:text-slate-400">{age.desc}</span>
+                </button>
+              {/each}
+            </div>
+          </div>
+          
+          <!-- Authority Level -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+              Authority Level *
+            </label>
+            <div class="space-y-2">
+              {#each authorityOptions as auth}
+                <button
+                  type="button"
+                  onclick={() => authorityLevel = auth.id}
+                  class="w-full flex flex-col gap-1 p-3 rounded-lg border-2 transition-all text-left {authorityLevel === auth.id ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20' : 'border-gray-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-600'}"
+                >
+                  <span class="text-sm font-semibold text-slate-900 dark:text-slate-100">{auth.label}</span>
+                  <span class="text-xs text-slate-500 dark:text-slate-400">{auth.desc}</span>
+                </button>
+              {/each}
+            </div>
+          </div>
+        </div>
+
         <!-- Emotional Tone -->
         <div>
           <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
@@ -398,7 +582,7 @@
       <!-- Create Button -->
       <button
         onclick={handleCreate}
-        disabled={!characterName.trim() || !characterDescription.trim() || !characterPersonality.trim() || (relationshipType === 'custom' && !customRelationship.trim()) || isCreating}
+        disabled={!characterName.trim() || !characterDescription.trim() || !characterPersonality.trim() || !userName.trim() || (relationshipType === 'custom' && !customRelationship.trim()) || (relationshipRole === 'custom' && !customRole.trim()) || isCreating}
         class="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:from-slate-600 disabled:to-slate-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl disabled:shadow-none transition-all disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {#if isCreating}
