@@ -41,17 +41,34 @@ class ModelConfigUpdate(BaseModel):
 
 
 class CharacterCreateRequest(BaseModel):
-    """Character creation request"""
+    """Character creation request with advanced relationship settings"""
+    # Core Identity
     name: str = Field(..., min_length=1, max_length=50, description="Character name")
     avatar: str = Field(..., min_length=1, max_length=10, description="Character avatar emoji")
     description: str = Field(..., min_length=10, max_length=200, description="Short description")
     personality: str = Field(..., min_length=10, max_length=1000, description="Personality traits")
     background: Optional[str] = Field(None, max_length=2000, description="Character background/lore")
+    
+    # Communication Settings
     language: str = Field(default="id", description="Primary language (id/en)")
     conversationStyle: str = Field(default="friendly", description="Conversation style")
-    relationshipType: str = Field(default="friend", description="Relationship type with user")
     emotionalTone: str = Field(default="warm", description="Emotional tone")
     category: str = Field(default="supportive", description="Character category")
+    
+    # Relationship System (Advanced)
+    relationshipType: str = Field(default="friend", description="Emotional relationship (friend/partner/mentor/rival)")
+    relationshipRole: Optional[str] = Field(None, description="Social role (kakak/adik/senior/equal/custom)")
+    relationshipLabel: Optional[str] = Field(None, description="Custom relationship name (e.g., 'kakak angkat')")
+    
+    # User Identity Awareness
+    userName: Optional[str] = Field(None, description="How character addresses user")
+    preferredAddress: Optional[str] = Field(None, description="Formal address (kamu/mas/mbak/sayang)")
+    
+    # Relative Positioning
+    ageRelation: Optional[str] = Field(default="same", description="Age relative to user (older/younger/same)")
+    authorityLevel: Optional[str] = Field(default="equal", description="Authority (higher/equal/lower)")
+    
+    # Advanced Overrides
     greeting: Optional[str] = Field(None, description="Custom greeting message")
     systemPromptOverride: Optional[str] = Field(None, description="Custom system prompt (advanced)")
 

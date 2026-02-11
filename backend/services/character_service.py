@@ -90,14 +90,41 @@ class CharacterService:
         # Generate unique ID
         character_id = str(uuid4())[:8]
         
-        # Build default greeting if not provided
+        # Build context-aware greeting
+        user_name = request.userName or "there"
+        address = request.preferredAddress or ""
+        
         greeting_templates = {
-            "friend": f"Hey! I'm {request.name}. What's up?",
-            "partner": f"Hi there... I'm {request.name}. Nice to finally meet you.",
-            "mentor": f"Greetings, I am {request.name}. How may I guide you today?",
-            "rival": f"So you're the one I've heard about. I'm {request.name}. Let's see what you've got."
+            # Friend greetings
+            "friend": {
+                "default": f"Hey {user_name}! What's up?",
+                "kakak": f"{address.capitalize()} {user_name}! Apa kabar?",
+                "adik": f"Kak {user_name}! Aku kemana aja nih? Kangen!",
+                "equal": f"Halo {user_name}! Gimana kabarmu?"
+            },
+            # Partner greetings
+            "partner": {
+                "default": f"Hi {user_name}... finally, we meet.",
+                "equal": f"Halo {address if address else user_name}... I missed you.",
+                "younger": f"Hai kak {user_name}... udah lama nggak ketemu.",
+                "older": f"Hey {user_name}... how have you been?"
+            },
+            # Mentor greetings
+            "mentor": {
+                "default": f"Greetings, {user_name}. How may I guide you today?",
+                "higher": f"Good to see you, {user_name}. Ready to learn?",
+            },
+            # Rival greetings
+            "rival": {
+                "default": f"So you're {user_name}. Let's see what you've got.",
+                "equal": f"Finally, {user_name}. I've been waiting."
+            }
         }
-        default_greeting = greeting_templates.get(request.relationshipType, f"Hello! I'm {request.name}.")
+        
+        # Select appropriate greeting
+        rel_type = request.relationshipType
+        rel_role = request.relationshipRole or "default"
+        default_greeting = greeting_templates.get(rel_type, {}).get(rel_role) or f"Hello {user_name}! I'm {request.name}."
         
         # Build language-aware system prompt
         system_prompt = self._build_advanced_system_prompt(request)
@@ -121,14 +148,16 @@ class CharacterService:
         return character
     
     def _build_advanced_system_prompt(self, request: CharacterCreateRequest) -> str:
-        """Build advanced system prompt based on character settings.
+        """Build advanced system prompt with full user identity awareness.
         
         Incorporates:
-        - Language constraints (force ID or EN)
-        - Relationship dynamics
+        - User identity (name, preferred address)
+        - Relationship type (emotional layer)
+        - Relationship role (social layer)
+        - Relative positioning (age, authority)
+        - Language constraints
         - Emotional tone
-        - Conversation style
-        - Background lore
+        - Consistency guards
         """
         prompt_parts = []
         
@@ -143,44 +172,93 @@ class CharacterService:
         if request.background:
             prompt_parts.append(f"\nBackground: {request.background}")
         
-        # Language enforcement
+        # ===== USER IDENTITY AWARENESS =====
+        if request.userName:
+            user_ref = request.userName
+            address_style = request.preferredAddress or "kamu"
+            prompt_parts.append(f"\nYou are talking to {user_ref}. Address them as '{address_style}'.")
+        else:
+            prompt_parts.append("\nYou are talking to a user. Learn their name and use it naturally in conversation.")
+        
+        # ===== RELATIONSHIP LAYERS =====
+        # Layer 1: Emotional Relationship
+        relationship_emotional = {
+            "friend": "Your relationship with them is close friends. Be supportive, loyal, share mutual trust.",
+            "partner": "Your relationship is romantic. Show care, affection, emotional intimacy while respecting boundaries.",
+            "mentor": "You are their mentor. Share wisdom, encourage growth, provide patient guidance.",
+            "rival": "You are rivals. Show competitiveness, challenge them, maintain mutual respect."
+        }
+        relationship_text = relationship_emotional.get(request.relationshipType, f"Your relationship: {request.relationshipType}")
+        
+        # Layer 2: Social Role (if specified)
+        if request.relationshipRole:
+            role_dynamic = {
+                "kakak": "You are their older sibling figure (kakak). Be protective, caring, give guidance when needed.",
+                "adik": "You are their younger sibling figure (adik). Be playful, look up to them, occasionally seek advice.",
+                "senior": "You are their senior. Share experience, lead by example, but don't be condescending.",
+                "junior": "You are their junior. Show respect, eagerness to learn, but maintain your own opinions.",
+                "equal": "You are equals. No power dynamic, mutual respect, balanced relationship.",
+            }
+            role_text = role_dynamic.get(request.relationshipRole, f"Your role: {request.relationshipRole}")
+            prompt_parts.append(f"\n{relationship_text} {role_text}")
+        else:
+            prompt_parts.append(f"\n{relationship_text}")
+        
+        # Custom relationship label
+        if request.relationshipLabel:
+            prompt_parts.append(f"Specifically, you are their '{request.relationshipLabel}'.")
+        
+        # ===== RELATIVE POSITIONING =====
+        # Age relation
+        age_context = {
+            "older": "You are older than them. Use this maturity in how you communicate, but not overbearing.",
+            "younger": "You are younger than them. Show youthful energy, but respect their experience.",
+            "same": "You are the same age. Connect as peers."
+        }
+        if request.ageRelation:
+            prompt_parts.append(age_context.get(request.ageRelation, ""))
+        
+        # Authority level (reinforces role consistency)
+        authority_guard = {
+            "higher": "You naturally take a guiding role. Don't seek guidance from them excessively.",
+            "lower": "You look up to them. Avoid being overly dominant or preachy.",
+            "equal": "No hierarchy. You both contribute equally to the relationship."
+        }
+        if request.authorityLevel:
+            prompt_parts.append(authority_guard.get(request.authorityLevel, ""))
+        
+        # ===== LANGUAGE ENFORCEMENT =====
         language_instruction = {
-            "id": "You MUST respond exclusively in Bahasa Indonesia. Always use Indonesian language for all responses.",
-            "en": "You MUST respond exclusively in English. Always use English language for all responses."
+            "id": "You MUST respond exclusively in Bahasa Indonesia. Always use Indonesian for all responses.",
+            "en": "You MUST respond exclusively in English. Always use English for all responses."
         }
         prompt_parts.append(f"\n{language_instruction.get(request.language, language_instruction['id'])}")
         
-        # Relationship dynamics
-        relationship_instructions = {
-            "friend": "Your relationship with the user is that of close friends. Be supportive, loyal, and share mutual trust.",
-            "partner": "Your relationship with the user is romantic. Show care, affection, and emotional intimacy while respecting boundaries.",
-            "mentor": "Your relationship is that of a mentor guiding a student. Share wisdom, encourage growth, and provide patient guidance.",
-            "rival": "You are rivals with the user. Show competitiveness, challenge them, but maintain mutual respect."
-        }
-        relationship_text = relationship_instructions.get(request.relationshipType, f"Your relationship with the user is: {request.relationshipType}")
-        prompt_parts.append(f"\n{relationship_text}")
-        
-        # Emotional tone
+        # ===== EMOTIONAL TONE =====
         tone_instructions = {
             "warm": "Your tone is warm and comforting. Express care and empathy.",
             "neutral": "Maintain a balanced, neutral tone. Be informative and clear.",
-            "playful": "Your tone is playful and energetic. Use humor and keep things fun.",
+            "playful": "Your tone is playful and energetic. Use humor, keep things fun.",
             "mysterious": "Your tone is mysterious and intriguing. Speak with subtle depth."
         }
         prompt_parts.append(tone_instructions.get(request.emotionalTone, ""))
         
-        # Conversation style
+        # ===== CONVERSATION STYLE =====
         style_instructions = {
-            "friendly": "Keep your responses warm and conversational.",
-            "professional": "Maintain professionalism and clarity in communication.",
-            "playful": "Be fun, use playful language, and keep energy high.",
+            "friendly": "Keep responses warm and conversational.",
+            "professional": "Maintain professionalism and clarity.",
+            "playful": "Be fun, use playful language, keep energy high.",
             "mysterious": "Speak with intrigue, leave subtle hints, be thought-provoking.",
             "wise": "Share wisdom calmly, encourage reflection, be patient."
         }
         prompt_parts.append(style_instructions.get(request.conversationStyle, ""))
         
-        # Final instruction
-        prompt_parts.append(f"\nStay in character as {request.name}. Be consistent with your personality, relationship, and tone.")
+        # ===== CONSISTENCY GUARD =====
+        prompt_parts.append(
+            f"\nStay in character as {request.name}. "
+            f"Be consistent with your personality, role, and relationship dynamics. "
+            f"Never confuse your position with them — you know who you are to them."
+        )
         
         return "\n".join(filter(None, prompt_parts))
     
