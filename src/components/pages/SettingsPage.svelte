@@ -135,59 +135,59 @@
       </div>
     {:else}
       <!-- Settings Sections -->
-    <div class="space-y-6">
-      {#each settingsSections as section}
-        <div class="bg-white dark:bg-slate-800/50 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
-          <!-- Section Header -->
-          <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center gap-3">
-            <section.icon size={20} class="text-purple-500" />
-            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{section.title}</h2>
-          </div>
+      <div class="space-y-6">
+        {#each settingsSections as section}
+          <div class="bg-white dark:bg-slate-800/50 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
+            <!-- Section Header -->
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-slate-700 flex items-center gap-3">
+              <section.icon size={20} class="text-purple-500" />
+              <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{section.title}</h2>
+            </div>
 
-          <!-- Section Items -->
-          <div class="divide-y divide-gray-200 dark:divide-slate-700">
-            {#each section.items as item}
-              <div class="px-6 py-4 flex items-center justify-between gap-4">
-                <div class="flex-1 min-w-0">
-                  <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100 mb-0.5">{item.label}</h3>
-                  <p class="text-xs text-slate-500 dark:text-slate-400">{item.description}</p>
+            <!-- Section Items -->
+            <div class="divide-y divide-gray-200 dark:divide-slate-700">
+              {#each section.items as item}
+                <div class="px-6 py-4 flex items-center justify-between gap-4">
+                  <div class="flex-1 min-w-0">
+                    <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100 mb-0.5">{item.label}</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">{item.description}</p>
+                  </div>
+
+                  <!-- Component based on type -->
+                  {#if item.component === 'theme-toggle'}
+                    <button
+                      onclick={toggleTheme}
+                      class="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors"
+                    >
+                      {#if currentTheme === 'dark'}
+                        <Moon size={16} />
+                        <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Dark</span>
+                      {:else}
+                        <Sun size={16} />
+                        <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Light</span>
+                      {/if}
+                    </button>
+                  {:else if item.component === 'toggle'}
+                    <button
+                      onclick={item.onChange}
+                      class="relative w-12 h-6 rounded-full transition-colors {item.value ? 'bg-purple-600' : 'bg-gray-300 dark:bg-slate-600'}"
+                    >
+                      <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform {item.value ? 'translate-x-6' : 'translate-x-0'}"></div>
+                    </button>
+                  {:else if item.component === 'text'}
+                    <span class="text-sm text-slate-500 dark:text-slate-400">{item.description}</span>
+                  {/if}
                 </div>
-
-                <!-- Component based on type -->
-                {#if item.component === 'theme-toggle'}
-                  <button
-                    onclick={toggleTheme}
-                    class="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 rounded-lg transition-colors"
-                  >
-                    {#if currentTheme === 'dark'}
-                      <Moon size={16} />
-                      <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Dark</span>
-                    {:else}
-                      <Sun size={16} />
-                      <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Light</span>
-                    {/if}
-                  </button>
-                {:else if item.component === 'toggle'}
-                  <button
-                    onclick={item.onChange}
-                    class="relative w-12 h-6 rounded-full transition-colors {item.value ? 'bg-purple-600' : 'bg-gray-300 dark:bg-slate-600'}"
-                  >
-                    <div class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform {item.value ? 'translate-x-6' : 'translate-x-0'}"></div>
-                  </button>
-                {:else if item.component === 'text'}
-                  <span class="text-sm text-slate-500 dark:text-slate-400">{item.description}</span>
-                {/if}
-              </div>
-            {/each}
+              {/each}
+            </div>
           </div>
+        {/each}
       </div>
-    </div>
 
-    <!-- Footer -->
-    <div class="mt-8 mb-8 text-center text-sm text-slate-500 dark:text-slate-400">
-      <p>© 2026 EchoMinds. Made with 💜 for meaningful connections.</p>
-    </div>
-    
+      <!-- Footer -->
+      <div class="mt-8 mb-8 text-center text-sm text-slate-500 dark:text-slate-400">
+        <p>© 2026 EchoMinds. Made with 💜 for meaningful connections.</p>
+      </div>
     {/if}
   </div>
 </div>
