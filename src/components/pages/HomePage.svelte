@@ -2,12 +2,7 @@
   import type { Character } from '@lib/types';
   import { listCharacters } from '@services/api';
   import { ChevronDown, Sparkles } from '@lucide/svelte';
-
-  interface Props {
-    onCharacterSelect: (characterId: string) => void;
-  }
-
-  let { onCharacterSelect }: Props = $props();
+  import { router } from '@stores/router';
 
   // State management
   let characters = $state<Character[]>([]);
@@ -133,7 +128,7 @@
       <!-- Single Primary CTA -->
       <div>
         <button 
-          onclick={() => onCharacterSelect(featuredCharacter.id)}
+          onclick={() => router.navigateToChat(featuredCharacter.id)}
           class="group relative inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white text-lg font-semibold rounded-full shadow-2xl shadow-purple-500/40 transition-all duration-300 hover:scale-105 hover:shadow-purple-500/60"
         >
           <Sparkles size={24} class="group-hover:rotate-12 transition-transform" />
@@ -171,7 +166,7 @@
     <div class="grid grid-cols-2 lg:grid-cols-3 gap-6">
       {#each curatedCompanions as companion (companion.id)}
         <button
-          onclick={() => onCharacterSelect(companion.id)}
+          onclick={() => router.navigateToChat(companion.id)}
           class="group relative bg-gradient-to-b from-white/90 to-gray-50/60 dark:from-slate-800/80 dark:to-slate-800/40 backdrop-blur-sm rounded-3xl p-6 hover:scale-[1.02] transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/20 text-left overflow-hidden border border-gray-200 dark:border-transparent"
         >
           <!-- Glow effect on hover -->

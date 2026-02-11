@@ -2,12 +2,27 @@
   import type { Character } from '@lib/types';
   import { listCharacters } from '@services/api';
   import { router } from '@stores/router';
-  import { MessageSquare, Clock } from '@lucide/svelte';
+  import { MessageSquare, Clock, ArrowLeft } from '@lucide/svelte';
+  import ChatInterface from '@components/chat/ChatInterface.svelte';
 
   // API State
   let characters = $state<Character[]>([]);
   let loading = $state(true);
   let error = $state<string | null>(null);
+
+  // Router state
+  let routerState = $state({ currentRoute: 'my-chats', selectedCharacterId: null });
+
+  router.subscribe(state => {
+    routerState = state;
+  });
+
+  // Selected character for chat
+  const selectedCharacter = $derived(
+    routerState.selectedCharacterId
+      ? characters.find(c => c.id === routerState.selectedCharacterId)
+      : null
+  );
 
   // Load characters from backend
   async function loadCharacters() {
@@ -41,7 +56,37 @@
   );
 </script>
 
-<div class="h-full overflow-y-auto bg-gradient-to-b from-gray-50 to-white dark:from-slate-950 dark:to-slate-900 px-4 sm:px-6 py-8 pb-20">
+{#if selectedCharacter}
+  <!-- Chat View (fullscreen chat interface) -->
+  <div class="flex flex-col h-full">
+    <!-- Chat Header dengan Back Button -->
+    <header class="sticky top-0 z-50 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border-b border-gray-200 dark:border-slate-700 px-6 py-3">
+      <div class="flex items-center gap-4">
+        <button
+          onclick={() => router.navigateToMyChats()}
+          class="p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100"
+          aria-label="Back to chats"
+        >
+          <ArrowLeft size={24} />
+        </button>
+        
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-2xl">
+            {selectedCharacter.avatar || '🤖'}
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{selectedCharacter.name}</h2>
+            <p class="text-xs text-slate-600 dark:text-slate-400">Online</p>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <ChatInterface character={selectedCharacter} />
+  </div>
+{:else}
+  <!-- Chat List View -->
+  <div class="h-full overflow-y-auto bg-gradient-to-b from-gray-50 to-white dark:from-slate-950 dark:to-slate-900 px-4 sm:px-6 py-8 pb-20">
   <div class="max-w-4xl mx-auto">
     <!-- Header -->
     <div class="mb-8">
@@ -126,4 +171,5 @@
       </div>
     {/if}
   </div>
-</div>
+  </div>
+{/if}
