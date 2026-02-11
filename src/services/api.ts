@@ -1,4 +1,6 @@
-"""TypeScript API service for backend communication."""
+/**
+ * TypeScript API service for backend communication
+ */
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -53,7 +55,11 @@ async function fetchAPI<T>(
       );
     }
 
-    return isJSON ? await response.json() : await response.text();
+    if (isJSON) {
+      return await response.json();
+    } else {
+      return (await response.text()) as unknown as T;
+    }
   } catch (error) {
     if (error instanceof APIError) {
       throw error;
