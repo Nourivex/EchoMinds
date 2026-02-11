@@ -211,7 +211,15 @@
     { id: 'mysterious', label: 'Mysterious', emoji: '🌙' }
   ];
 
-  // Smart label suggestions based on type + role (MORE DIVERSE!)
+  // Helper: format label dengan atau tanpa userName
+  function withName(label: string, name?: string) {
+    if (!name || name.trim() === '') {
+      return label.replace(/\s+\S+$/, ''); // Remove last word if it's likely a name placeholder
+    }
+    return label.replace('{{user}}', name);
+  }
+
+  // Smart label suggestions dengan variety (randomized dari multiple options)
   const labelSuggestions = $derived.by(() => {
     const type = $companionForm.relationship.type;
     const role = $companionForm.relationship.role;
@@ -219,51 +227,311 @@
     
     const suggestions: Record<string, Record<string, string[]>> = {
       'romantic': {
-        'pacar': [`kekasih ${userName}`, `pacar tersayang ${userName}`, `cinta pertama ${userName}`, `belahan jiwa ${userName}`],
-        'tunangan': [`calon suami/istri ${userName}`, `tunangan ${userName}`, `pasangan masa depan ${userName}`],
-        'suami-istri': [`pasangan hidup ${userName}`, `belahan jiwa ${userName}`, `pendamping setia ${userName}`],
-        'gebetan': [`gebetan ${userName}`, `orang yang disukai ${userName}`, `crush rahasia ${userName}`],
-        'default': [`cinta ${userName}`, `yang tersayang`, `romantic partner ${userName}`]
+        'pacar': [
+          'kekasih {{user}}',
+          'pacar tersayang {{user}}',
+          'cinta pertama {{user}}',
+          'belahan jiwa {{user}}',
+          'rumah hatiku',
+          'partner romantisku',
+          'yang selalu kupilih',
+          'satu-satunya',
+          'pasangan rahasiaku',
+          'cinta dalam diam',
+          'tempat ku pulang',
+          'alasan tersenyumku'
+        ],
+        'tunangan': [
+          'calon suami/istri {{user}}',
+          'tunangan {{user}}',
+          'pasangan masa depan {{user}}',
+          'cinta yang kupinang',
+          'yang akan kunikahi',
+          'future together',
+          'komitmen selamanya',
+          'janji masa depan {{user}}',
+          'calon pendamping hidup',
+          'destiny partner {{user}}',
+          'ikatan suci kami'
+        ],
+        'suami-istri': [
+          'pasangan hidup {{user}}',
+          'belahan jiwa {{user}}',
+          'pendamping setia {{user}}',
+          'suami/istri tercinta',
+          'forever partner {{user}}',
+          'ikatan pernikahan kami',
+          'separuh jiwaku',
+          'pasangan sehidup semati',
+          'yang ku cinta selamanya',
+          'rumah tanggaku',
+          'cinta abadi {{user}}',
+          'soulmate sejati'
+        ],
+        'gebetan': [
+          'gebetan {{user}}',
+          'orang yang disukai {{user}}',
+          'crush rahasia {{user}}',
+          'yang bikin deg-degan',
+          'cinta dari jauh',
+          'secret admirer {{user}}',
+          'harapan hatiku',
+          'si bikin galau',
+          'impian diamku',
+          'perasaan terpendam',
+          'cinta satu arah'
+        ],
+        'default': [
+          'cinta {{user}}',
+          'yang tersayang',
+          'romantic partner {{user}}',
+          'kekasih hatiku',
+          'cinta sejatiku',
+          'passion hidupku',
+          'tempat ku berlabuh',
+          'alasan detak jantungku'
+        ]
       },
       'platonic': {
-        'sahabat': [`sahabat terbaik ${userName}`, `bestie sejak lama`, `partner in crime ${userName}`, `sahabat jiwa`],
-        'teman': [`teman dekat ${userName}`, `kawan setia`, `teman seperjuangan`, `buddy ${userName}`],
-        'kakak': [`kakak yang supportive`, `kakak kesayangan`, `kakak figure`, `big sibling energy`],
-        'adik': [`adik yang ceria`, `adik kesayangan`, `little one`, `adik manja`],
-        'sepupu': [`sepupu kesayangan`, `sepupu favorit`, `cousin vibes`, `family friend`],
-        'kenalan': [`kenalan ${userName}`, `familiar stranger`, `acquaintance ${userName}`],
-        'tetangga': [`tetangga baik hati`, `neighbor ${userName}`, `tetangga sebelah`],
-        'default': [`teman ${userName}`, `companion`, `platonic partner`]
+        'sahabat': [
+          'sahabat terbaik {{user}}',
+          'bestie sejak lama',
+          'partner in crime {{user}}',
+          'sahabat jiwa',
+          'sobat sejati',
+          'teman sampai tua',
+          'sahabat seperjuangan',
+          'soulmate platonik',
+          'bestfriend forever {{user}}',
+          'sepupu rasa sahabat'
+        ],
+        'teman': [
+          'teman dekat {{user}}',
+          'kawan setia',
+          'teman seperjuangan',
+          'buddy {{user}}',
+          'kawan baik',
+          'sahabat karib',
+          'friend vibes',
+          'teman yang supportive'
+        ],
+        'kakak': [
+          'kakak yang supportive',
+          'kakak kesayangan',
+          'kakak figure',
+          'big sibling energy',
+          'kakak pelindung',
+          'kakak panutan',
+          'protective older sibling'
+        ],
+        'adik': [
+          'adik yang ceria',
+          'adik kesayangan',
+          'little one',
+          'adik manja',
+          'adik yang lucu',
+          'si bungsu',
+          'adik yang menggemaskan'
+        ],
+        'sepupu': [
+          'sepupu kesayangan',
+          'sepupu favorit',
+          'cousin vibes',
+          'family friend',
+          'sepupu dekat',
+          'keluarga extended',
+          'sepupu seumuran'
+        ],
+        'kenalan': [
+          'kenalan {{user}}',
+          'familiar stranger',
+          'acquaintance {{user}}',
+          'kenalan baru',
+          'orang yang baru kenal',
+          'kenalan biasa',
+          'teman kenalan'
+        ],
+        'tetangga': [
+          'tetangga baik hati',
+          'neighbor {{user}}',
+          'tetangga sebelah',
+          'tetangga dekat',
+          'tetangga friendly',
+          'tetangga yang ramah',
+          'neighbor vibes'
+        ],
+        'default': [
+          'teman {{user}}',
+          'companion',
+          'platonic partner',
+          'kawan',
+          'buddy',
+          'sahabat platonis',
+          'teman sejati'
+        ]
       },
       'familial': {
-        'orang-tua': [`orang tua ${userName}`, `figur ayah/ibu`, `parent figure`, `orangtua substitusi`],
-        'kakak': [`kakak kandung`, `sibling kesayangan`, `protective older sibling`, `kakak sepupu`],
-        'adik': [`adik kandung`, `little sibling`, `adik kesayangan`, `youngest one`],
-        'sepupu': [`sepupu keluarga ${userName}`, `distant cousin`, `family member`, `keluarga dekat`],
-        'default': [`keluarga ${userName}`, `family member`, `blood relation`]
+        'orang-tua': [
+          'orang tua {{user}}',
+          'figur ayah/ibu',
+          'parent figure',
+          'orangtua substitusi',
+          'figur parental',
+          'pelindung keluarga',
+          'guardian {{user}}',
+          'orang tua angkat'
+        ],
+        'kakak': [
+          'kakak kandung',
+          'sibling kesayangan',
+          'protective older sibling',
+          'kakak sepupu',
+          'kakak tertua',
+          'big brother/sister',
+          'kakak pelindungku'
+        ],
+        'adik': [
+          'adik kandung',
+          'little sibling',
+          'adik kesayangan',
+          'youngest one',
+          'adik bungsu',
+          'little brother/sister',
+          'adik yang perlu dijaga'
+        ],
+        'sepupu': [
+          'sepupu keluarga {{user}}',
+          'distant cousin',
+          'family member',
+          'keluarga dekat',
+          'sepupu jauh',
+          'extended family',
+          'keluarga besar'
+        ],
+        'default': [
+          'keluarga {{user}}',
+          'family member',
+          'blood relation',
+          'anggota keluarga',
+          'saudara',
+          'family bond',
+          'keluarga dekat'
+        ]
       },
       'professional': {
-        'guru': [`guru ${userName}`, `mentor akademik`, `teacher figure`, `pembimbing ${userName}`],
-        'murid': [`murid ${userName}`, `student`, `anak didik`, `learner ${userName}`],
-        'senior': [`senior yang mengayomi`, `experienced guide`, `workplace mentor`, `senior respected`],
-        'junior': [`junior ${userName}`, `fresh learner`, `trainee`, `mentee ${userName}`],
-        'bos': [`bos ${userName}`, `superior`, `leader figure`, `atasan langsung`],
-        'rekan-kerja': [`partner kerja ${userName}`, `colleague`, `coworker vibes`, `work buddy`],
-        'default': [`professional connection`, `workplace relation`, `work partner`]
+        'guru': [
+          'guru {{user}}',
+          'mentor akademik',
+          'teacher figure',
+          'pembimbing {{user}}',
+          'sensei',
+          'pengajar',
+          'guru pembimbing',
+          'educator'
+        ],
+        'murid': [
+          'murid {{user}}',
+          'student',
+          'anak didik',
+          'learner {{user}}',
+          'pelajar',
+          'mentee',
+          'siswa/siswi'
+        ],
+        'senior': [
+          'senior yang mengayomi',
+          'experienced guide',
+          'workplace mentor',
+          'senior respected',
+          'senior figure',
+          'kakak senior',
+          'mentor profesional'
+        ],
+        'junior': [
+          'junior {{user}}',
+          'fresh learner',
+          'trainee',
+          'mentee {{user}}',
+          'junior fresh',
+          'adik junior',
+          'yang perlu dibimbing'
+        ],
+        'bos': [
+          'bos {{user}}',
+          'superior',
+          'leader figure',
+          'atasan langsung',
+          'boss',
+          'pemimpin',
+          'direktur'
+        ],
+        'rekan-kerja': [
+          'partner kerja {{user}}',
+          'colleague',
+          'coworker vibes',
+          'work buddy',
+          'rekan sejawat',
+          'partner profesional',
+          'teman kerja'
+        ],
+        'default': [
+          'professional connection',
+          'workplace relation',
+          'work partner',
+          'koneksi profesional',
+          'kolega',
+          'rekan bisnis',
+          'partner profesional'
+        ]
       },
       'competitive': {
-        'rival': [`rival utama ${userName}`, `nemesis`, `worthy opponent`, `kompetitor sejati`, `friendly rival`],
-        'musuh': [`musuh bebuyutan ${userName}`, `arch-enemy`, `antagonist`, `sworn enemy`, `oposisi ${userName}`],
-        'teman': [`teman sekaligus rival`, `frenemy`, `competitive friend`, `rival yang hormat`],
-        'default': [`kompetitor ${userName}`, `rival`, `adversary`]
+        'rival': [
+          'rival utama {{user}}',
+          'nemesis',
+          'worthy opponent',
+          'kompetitor sejati',
+          'friendly rival',
+          'musuh bebuyutan',
+          'lawan tanding',
+          'rival abadi',
+          'kompetitor terhebat'
+        ],
+        'musuh': [
+          'musuh bebuyutan {{user}}',
+          'arch-enemy',
+          'antagonist',
+          'sworn enemy',
+          'oposisi {{user}}',
+          'musuh utama',
+          'lawan sejati',
+          'enemy number one'
+        ],
+        'teman': [
+          'teman sekaligus rival',
+          'frenemy',
+          'competitive friend',
+          'rival yang hormat',
+          'kompetitor friendly',
+          'rival sekaligus sahabat',
+          'enemy turned friend'
+        ],
+        'default': [
+          'kompetitor {{user}}',
+          'rival',
+          'adversary',
+          'lawan',
+          'opposition',
+          'kompetitor sejati',
+          'musuh dalam selimut'
+        ]
       }
     };
     
     const natureMap = suggestions[type] || suggestions['platonic'];
-    const options = natureMap[role] || natureMap['default'] || [``];
+    const options = natureMap[role] || natureMap['default'] || ['teman {{user}}'];
     
     // Return random suggestion untuk variety
-    return options[Math.floor(Math.random() * options.length)];
+    return withName(options[Math.floor(Math.random() * options.length)], userName);
   });
 
   // Smart address suggestions
