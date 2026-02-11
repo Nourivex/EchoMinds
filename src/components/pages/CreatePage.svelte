@@ -124,7 +124,7 @@
   <title>Create New Companion | EchoMinds</title>
 </svelte:head>
 
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-8 px-4 pb-16">
+<div class="h-full overflow-y-auto bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 py-8 px-4 pb-16">
   <div class="max-w-4xl mx-auto">
     
     <!-- Header -->
