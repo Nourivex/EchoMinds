@@ -12,6 +12,8 @@ export interface CompanionFormData {
   basic: {
     name: string;
     avatar: string;
+    gender: 'Male' | 'Female';
+    race: string;
     description: string;
     category: string;
   };
@@ -28,18 +30,12 @@ export interface CompanionFormData {
     styles: string[]; // Changed from style to styles (multi-select max 3)
   };
   
-  // Relationship Dynamics (7 layers)
+  // Relationship Dynamics (SIMPLIFIED)
   relationship: {
-    type: string;
-    role: string;
-    label: string;
-    customType?: string;
-    customRole?: string;
-    userName: string;
-    preferredAddress: string;
-    ageRelation: string;
-    authorityLevel: string;
-    emotionalTone: string;
+    type: string;              // friend, partner, mentor, student, rival
+    label: string;             // Optional custom label
+    userName: string;          // User's name
+    preferredAddress: string;  // casual, respectful, intimate
   };
 }
 
@@ -47,7 +43,9 @@ export interface CompanionFormData {
 const initialFormData: CompanionFormData = {
   basic: {
     name: '',
-    avatar: '🤖',
+    avatar: '😊',
+    gender: 'Female',
+    race: 'asian',
     description: '',
     category: 'supportive'
   },
@@ -61,13 +59,9 @@ const initialFormData: CompanionFormData = {
   },
   relationship: {
     type: 'friend',
-    role: 'equal',
     label: '',
     userName: '',
-    preferredAddress: 'kamu',
-    ageRelation: 'same',
-    authorityLevel: 'equal',
-    emotionalTone: 'warm'
+    preferredAddress: 'casual'
   }
 };
 
@@ -142,28 +136,57 @@ export function goToStep(step: number) {
   currentStep.set(Math.max(0, Math.min(step, 3)));
 }
 
+// Helper: Convert race ID to label
+const raceIdToLabel: Record<string, string> = {
+  'asian': 'Asian',
+  'caucasian': 'Caucasian',
+  'african': 'African',
+  'hispanic': 'Hispanic',
+  'middle-eastern': 'Middle Eastern',
+  'indigenous': 'Indigenous',
+  'pacific-islander': 'Pacific Islander',
+  'mixed': 'Mixed',
+  'elf': 'Elf',
+  'dwarf': 'Dwarf',
+  'vampire': 'Vampire',
+  'werewolf': 'Werewolf',
+  'fairy': 'Fairy',
+  'demon': 'Demon',
+  'angel': 'Angel',
+  'dragon': 'Dragon',
+  'mermaid': 'Mermaid',
+  'wizard': 'Wizard',
+  'android': 'Android',
+  'alien': 'Alien'
+};
+
 // Convert store data to API payload
 export function toAPIPayload(formData: CompanionFormData) {
+  // Map preferredAddress to backend format
+  const addressMapping: Record<string, string> = {
+    'casual': 'kamu',
+    'respectful': 'mas',  // or 'mbak' depending on character gender
+    'intimate': 'sayang'
+  };
+
   return {
     name: formData.basic.name,
     avatar: formData.basic.avatar,
+    gender: formData.basic.gender,
+    race: raceIdToLabel[formData.basic.race] || formData.basic.race,
     description: formData.basic.description,
     category: formData.basic.category,
     personality: formData.personality.traits,
     background: formData.personality.background,
     language: formData.communication.language,
-    conversationStyle: formData.communication.styles.join(', '), // Join multiple styles
-    relationshipType: formData.relationship.type === 'custom' 
-      ? formData.relationship.customType! 
-      : formData.relationship.type,
-    relationshipRole: formData.relationship.role === 'custom'
-      ? formData.relationship.customRole!
-      : formData.relationship.role,
-    relationshipLabel: formData.relationship.label,
-    userName: formData.relationship.userName || formData.basic.name,
-    preferredAddress: formData.relationship.preferredAddress,
-    ageRelation: formData.relationship.ageRelation,
-    authorityLevel: formData.relationship.authorityLevel,
-    emotionalTone: formData.relationship.emotionalTone
+    conversationStyle: formData.communication.styles.join(', '),
+    relationshipType: formData.relationship.type,
+    relationshipRole: 'equal',  // Default to equal (simplified)
+    relationshipLabel: formData.relationship.label || formData.relationship.type,
+    userName: formData.relationship.userName || 'User',
+    preferredAddress: addressMapping[formData.relationship.preferredAddress] || 'kamu',
+    ageRelation: 'same',  // Default (simplified)
+    authorityLevel: 'equal',  // Default (simplified)
+    emotionalTone: 'warm'  // Default (simplified)
   };
 }

@@ -28,6 +28,12 @@ class MemoryType(str, Enum):
     AUTO = "auto"              # Auto-generated from conversations
 
 
+class Gender(str, Enum):
+    """Character gender (Candy AI style)"""
+    MALE = "Male"
+    FEMALE = "Female"
+
+
 # ============ API Request Models ============
 
 class ChatMessage(BaseModel):
@@ -54,6 +60,8 @@ class CharacterCreateRequest(BaseModel):
     # Core Identity
     name: str = Field(..., min_length=1, max_length=50, description="Character name")
     avatar: str = Field(..., min_length=1, max_length=10, description="Character avatar emoji")
+    gender: Gender = Field(..., description="Character gender (Male/Female)")
+    race: str = Field(..., max_length=50, description="Character race/ethnicity (real-world or fantasy)")
     description: str = Field(..., min_length=10, max_length=200, description="Short description")
     personality: str = Field(..., min_length=10, max_length=1000, description="Personality traits")
     background: Optional[str] = Field(None, max_length=2000, description="Character background/lore")
@@ -196,6 +204,8 @@ class CharacterProfile(BaseModel):
     id: str
     name: str
     avatar: str
+    gender: Gender
+    race: str
     description: str
     personality: str
     greeting: str

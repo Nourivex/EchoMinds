@@ -16,7 +16,7 @@
   import BasicIdentitySection from '@components/create/sections/BasicIdentitySection.svelte';
   import PersonalitySection from '@components/create/sections/PersonalitySection.svelte';
   import CommunicationSection from '@components/create/sections/CommunicationSection.svelte';
-  import RelationshipSection from '@components/create/sections/RelationshipSection.svelte';
+  import RelationshipSection from '@components/create/sections/RelationshipSection_Simplified.svelte';
 
   const stepLabels = [
     'Basic Identity',

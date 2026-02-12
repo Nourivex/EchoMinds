@@ -1,7 +1,38 @@
 <script lang="ts">
   import { updateBasic, companionForm } from '@stores/companionForm';
   
-  const avatarOptions = ['🤖', '👨', '👩', '🧑', '👦', '👧', '🧒', '👶', '🦸', '🦹', '🧙', '🧚', '🧛', '🧜', '🧝', '🧞'];
+  const avatarOptions = [
+    '😊', '😎', '🥰', '😇', '🤗', '😏', '🤔', '😌', 
+    '💫', '✨', '⭐', '🌟', '🔥', '💙', '💜', '💚',
+    '🦋', '🌸', '🌺', '🌻', '🦄', '🐉', '🦊', '🐺',
+    '👨', '👩', '🧑', '👨‍💼', '👩‍💼', '👨‍🎨', '👩‍🎨', '🧙'
+  ];
+  
+  const raceOptions = [
+    // Real-world races
+    { id: 'asian', label: 'Asian', icon: '🌏' },
+    { id: 'caucasian', label: 'Caucasian', icon: '🌍' },
+    { id: 'african', label: 'African', icon: '🌍' },
+    { id: 'hispanic', label: 'Hispanic', icon: '🌎' },
+    { id: 'middle-eastern', label: 'Middle Eastern', icon: '🌍' },
+    { id: 'indigenous', label: 'Indigenous', icon: '🌿' },
+    { id: 'pacific-islander', label: 'Pacific Islander', icon: '🏝️' },
+    { id: 'mixed', label: 'Mixed/Multiracial', icon: '🌈' },
+    
+    // Fantasy races
+    { id: 'elf', label: 'Elf', icon: '🧝' },
+    { id: 'dwarf', label: 'Dwarf', icon: '⚒️' },
+    { id: 'vampire', label: 'Vampire', icon: '🧛' },
+    { id: 'werewolf', label: 'Werewolf', icon: '🐺' },
+    { id: 'fairy', label: 'Fairy', icon: '🧚' },
+    { id: 'demon', label: 'Demon', icon: '😈' },
+    { id: 'angel', label: 'Angel', icon: '😇' },
+    { id: 'dragon', label: 'Dragon', icon: '🐉' },
+    { id: 'mermaid', label: 'Mermaid', icon: '🧜' },
+    { id: 'wizard', label: 'Wizard', icon: '🧙' },
+    { id: 'android', label: 'Android', icon: '🤖' },
+    { id: 'alien', label: 'Alien', icon: '👽' }
+  ];
   
   const categoryOptions = [
     { id: 'supportive', label: 'Supportive', icon: '💙' },
@@ -23,7 +54,63 @@
     </p>
   </div>
 
-  <!-- Avatar Selection -->
+  <!-- STEP 1: GENDER (First Priority) -->
+  <div>
+    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+      Gender *
+    </label>
+    <div class="grid grid-cols-2 gap-3">
+      <button
+        type="button"
+        onclick={() => updateBasic({ gender: 'Male' })}
+        class="flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all {
+          $companionForm.basic.gender === 'Male'
+            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-md ring-2 ring-blue-200'
+            : 'border-gray-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600'
+        }"
+      >
+        <span class="text-2xl">♂️</span>
+        <span class="text-base font-medium text-slate-700 dark:text-slate-300">Male</span>
+      </button>
+      <button
+        type="button"
+        onclick={() => updateBasic({ gender: 'Female' })}
+        class="flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition-all {
+          $companionForm.basic.gender === 'Female'
+            ? 'border-pink-500 bg-pink-50 dark:bg-pink-900/20 shadow-md ring-2 ring-pink-200'
+            : 'border-gray-200 dark:border-slate-700 hover:border-pink-300 dark:hover:border-pink-600'
+        }"
+      >
+        <span class="text-2xl">♀️</span>
+        <span class="text-base font-medium text-slate-700 dark:text-slate-300">Female</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2: RACE (Second Priority) -->
+  <div>
+    <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+      Race/Ethnicity *
+    </label>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+      {#each raceOptions as race}
+        <button
+          type="button"
+          onclick={() => updateBasic({ race: race.id })}
+          class="flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all {
+            $companionForm.basic.race === race.id
+              ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 shadow-md ring-2 ring-purple-200'
+              : 'border-gray-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-600'
+          }"
+        >
+          <span class="text-lg">{race.icon}</span>
+          <span class="text-xs font-medium text-slate-700 dark:text-slate-300">{race.label}</span>
+        </button>
+      {/each}
+    </div>
+  </div>
+
+  <!-- STEP 3: Avatar Selection -->
   <div>
     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
       Choose Avatar *
@@ -45,7 +132,7 @@
     </div>
   </div>
 
-  <!-- Name -->
+  <!-- STEP 4: Name -->
   <div>
     <label for="name" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
       Character Name *
@@ -60,7 +147,7 @@
     />
   </div>
 
-  <!-- Description -->
+  <!-- STEP 5: Description -->
   <div>
     <label for="description" class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
       Short Description *
@@ -75,7 +162,7 @@
     />
   </div>
 
-  <!-- Category -->
+  <!-- STEP 6: Category -->
   <div>
     <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
       Category *

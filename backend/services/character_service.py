@@ -134,6 +134,8 @@ class CharacterService:
             id=character_id,
             name=request.name,
             avatar=request.avatar,
+            gender=request.gender,
+            race=request.race,
             description=request.description,
             personality=request.personality,
             greeting=request.greeting or default_greeting,
@@ -161,8 +163,11 @@ class CharacterService:
         """
         prompt_parts = []
         
-        # Core identity
-        prompt_parts.append(f"You are {request.name}.")
+        # Core identity with gender and race context
+        gender_context = f"a {request.gender.value.lower()}"
+        race_label = request.race.replace('-', ' ').title()  # e.g., "middle-eastern" -> "Middle Eastern"
+        
+        prompt_parts.append(f"You are {request.name}, {gender_context} {race_label} character.")
         prompt_parts.append(f"{request.description}")
         
         # Personality traits
