@@ -43,7 +43,7 @@ export interface CompanionFormData {
 const initialFormData: CompanionFormData = {
   basic: {
     name: '',
-    avatar: '😊',
+    avatar: 'default-1',
     gender: 'Female',
     race: 'asian',
     description: '',
